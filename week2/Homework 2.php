@@ -1,3 +1,6 @@
+<!--ID : 2030346 -->
+<!--Name : NG WING Chun -->
+<!--Topic : Homework 2 About use PHP to generate date select menu(array) -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,11 +24,10 @@
 
             for ($day = 1; $day <= 31; $day++) {
 
-                echo "<option class='bg-white'>" . $day . "</option>";
+                echo "<option class='bg-white' value='$day'>" . $day . "</option>";
             }
             ?>
         </select>
-
         <select class="bg-warning fs-3 rounded" id="month" name="month">
             <option class='bg-white' selected>Month</option>
             <?php
@@ -33,8 +35,10 @@
                     "January", "February", "March", "April", "May", "June",
                     "July", "August", "September", "October", "November", "December"
                 );
-                foreach ($month as $value) {
-                    echo "<option class='bg-white'>" . $value . "</option>";
+        
+                foreach ($month as $index => $monthvalue) {
+            
+                    echo "<option class='bg-white' value='".($index+1)."'>$monthvalue</option>";
                 }
                 ?>
         </select>
@@ -43,9 +47,9 @@
             <option class='bg-white' selected>Year</option>
             <?php
 
-            for ($year = 1990; $year <= 2021; $year++) {
+            for ($year = 1990; $year <= date("Y"); $year++) {
 
-                echo "<option class='bg-white'>" . $year . "</option>";
+                echo "<option class='bg-white' value='$year'>$year</option>";
             }
 
             ?>
