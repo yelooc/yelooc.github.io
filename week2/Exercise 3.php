@@ -1,3 +1,6 @@
+<!--ID : 2030346 -->
+<!--Name : NG WING Chun -->
+<!--Topic : Exercise 3 generate the two random number which is bigger and smaller(if else short)-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +10,7 @@
     <!-- Bootstrap CSS → -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
-    <title>Web Exercise 3</title>
+    <title>Exercise 3 generate the two random number which is bigger and smaller(if else short)</title>
 </head>
 <body>
 

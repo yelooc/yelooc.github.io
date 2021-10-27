@@ -1,6 +1,10 @@
+<!--ID : 2030346 -->
+<!--Name : NG WING Chun -->
+<!--Topic : Exercise 2 generate random number to calculate(SUM or MULTIPLE)-->
+<!DOCTYPE html>
 <!DOCTYPE html>
 <html>
-
+<title>Exercise 2 generate random number to calculate(SUM or MULTIPLE)</title>
 <body>
 
     <?php
