@@ -15,25 +15,25 @@
     <div class="container-fuild bg-dark">
         <div class="container">
 
-        <nav class="navbar-expand-lg py-2">
+            <nav class="navbar-expand-lg py-2">
 
-<div class="collapse navbar-collapse">
-    <ul class="navbar-nav mb-2 mb-lg-0">
-        <li class="nav-item">
-            <a class="nav-link text-secondary" href="home.php">Home</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-secondary" href="product_create.php">Create Product</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active text-white" href="#">Create Customer</a>
-        </li>
-        <li class="nav-item ">
-            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
-        </li>
-    </ul>
-</div>
-</nav>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary" href="home.php">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary" href="product_create.php">Create Product</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active text-white" href="#">Create Customer</a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
         </div>
     </div>
 
@@ -51,46 +51,147 @@
             include 'config/database.php';
             try {
                 // insert query
-                $query = "INSERT INTO customers SET username=:username, password=:password, firstname=:firstname, 
+                $query = "INSERT INTO customers SET username=:username, 
+                email=:email, password=:password,
+                comfirm_password=:comfirm_password,
+                firstname=:firstname, 
                 lastname=:lastname,
                 gender=:gender, 
-                date_of_birth=:date_of_birth, 
-                registration_date_and_time=:registration_date_and_time,
-                account_status=:account_status,
-                created=:created";
+                date_of_birth=:date_of_birth
+                ";
                 // prepare query for execution
                 $stmt = $con->prepare($query);
                 $username = $_POST['username'];
+                $email = $_POST['email'];
                 $password = $_POST['password'];
+                $crytp_password = md5($password);
+                $comfirm_password = $_POST['comfirm_password'];
+                $crytp_comfirm_password = md5($comfirm_password);
                 $firstname = $_POST['firstname'];
                 $lastname = $_POST['lastname'];
                 $gender = $_POST['gender'];
                 $date_of_birth = $_POST['date_of_birth'];
-                $registration_date_and_time = $_POST['registration_date_and_time'];
-                $account_status = $_POST['account_status'];
                 // bind the parameters
                 $stmt->bindParam(':username', $username);
-                $stmt->bindParam(':password', $password);
+                $stmt->bindParam(':email', $email);
+                $stmt->bindParam(':password', $crytp_password);
+                $stmt->bindParam(':comfirm_password', $crytp_comfirm_password);
                 $stmt->bindParam(':firstname', $firstname);
                 $stmt->bindParam(':lastname', $lastname);
                 $stmt->bindParam(':gender', $gender);
                 $stmt->bindParam(':date_of_birth', $date_of_birth);
-                $stmt->bindParam(':registration_date_and_time', $registration_date_and_time);
-                $stmt->bindParam(':account_status', $account_status);
-                $created = date('Y-m-d H:i:s'); // get the current date and time
-                $stmt->bindParam(':created', $created);
-                // Execute the query
-                if ($stmt->execute()) {
-                    echo "<div class='alert alert-success'>Record was saved.</div>";
+                // Execute the query  
+                $flag = 0;
+                $message = "";
+
+                //empty validation
+                if (!preg_match("/[a-zA-Z0-9]{1,}/", $date_of_birth)) {
+                    $message = "Date Of Bith cannot be empty";
+                    $flag = 1;
                 } else {
-                    echo "<div class='alert alert-danger'>Unable to save record.</div>";
+                    //date of birth validation
+                    if ($date_of_birth . substr(0, 4) >= 2005) {
+                        $message = "You must be 18 years old or above";
+                        $flag = 1;
+                    }
+                }
+                if (!preg_match("/[a-zA-Z0-9]{1,}/", $lastname)) {
+                    $message = "Last Name cannot be empty";
+                    $flag = 1;
+                }
+                if (!preg_match("/[a-zA-Z-0-9]{1,}/", $firstname)) {
+                    $message = "First Name cannot be empty";
+                    $flag = 1;
+                }else{
+                    if (preg_match("/\s/", $firstname)) {
+                        $message = "First Name cannot contain space";
+                        $flag = 1;
+                    }
+                }
+                if (!preg_match("/[a-zA-Z0-9]{1,}/", $comfirm_password)) {
+                    $message = "Comfirm Password cannot be empty";
+                    $flag = 1;
+                } else {
+                    //comfirm password validation
+                    if ($comfirm_password != $password) {
+                        $message = "Comfirm Password should fill same with password";
+                        $flag = 1;
+                    }
+                }
+                if (!preg_match("/[a-zA-Z0-9]{1,}/", $password)) {
+                    $message = "Password cannot be empty";
+                    $flag = 1;
+                } else {
+                    //password validation
+                    if (!preg_match("/[A-Z]/", $password)) {
+                        $message = "password need Upper letter";
+                        $flag = 1;
+                    }
+                    if (!preg_match("/[0-9]/", $password)) {
+                        $message = "password need Numerial";
+                        $flag = 1;
+                    }
+                    if (!preg_match("/[0-9A-Za-z]{8,}/", $password)) {
+                        $message = "password need more than 8 charater";
+                        $flag = 1;
+                    }
+                    if (preg_match("/\s/", $password)) {
+                        $message = "Password cannot contain space";
+                        $flag = 1;
+                    }
+                }
+                if (!preg_match("/[a-z0-9]{1,}/", $email)) {
+                    $message = "Email cannot be empty";
+                    $flag = 1;
+                } else {
+                    if (!preg_match("/@/", $email) || !preg_match("/\./", $email)) {
+                        $message = "Email must include @ and .";
+                        $flag = 1;
+                    }
+                    if (substr($email,-5,-4) == '@'){
+                        $message = "You must fill in xxxxx@gmail.com or others example hotmail, yahoo";
+                        $flag = 1;
+                    }
+                    if (preg_match("/\s/", $email)) {
+                        $message = "Email cannot contain space";
+                        $flag = 1;
+                    }
+                }
+                if (!preg_match("/[a-zA-Z0-9]{1,}/", $username)) {
+                    $message = "Username cannot be empty";
+                    $flag = 1;
+                } else {
+                    //username validation
+                    if (!preg_match("/[a-zA-Z0-9]{6,}/", $username)) {
+                        $message = "Username should more than 6 charater";
+                        $flag = 1;
+                    }
+                    if (preg_match("/\s/", $username)) {
+                        $message = "Username cannot contain space";
+                        $flag = 1;
+                    }
+                }
+
+                if ($flag == 0) {
+                    if ($stmt->execute()) {
+                        echo "<div class='alert alert-success'>Record was saved.</div>";
+                    }
+                } else {
+                    echo "<div class='alert alert-danger'>";
+                    echo $message;
+                    echo "</div>";
                 }
             }
+
             // show error
             catch (PDOException $exception) {
                 die('ERROR: ' . $exception->getMessage());
             }
         }
+
+        ?>
+
+        <?php
 
         ?>
 
@@ -102,8 +203,16 @@
                     <td><input type='text' name='username' class='form-control' /></td>
                 </tr>
                 <tr>
+                    <td>Email</td>
+                    <td><input type='email' name='email' class='form-control' /></td>
+                </tr>
+                <tr>
                     <td>Password</td>
                     <td><input type='password' name='password' class='form-control' /></td>
+                </tr>
+                <tr>
+                    <td>Comfirm Password</td>
+                    <td><input type='password' name='comfirm_password' class='form-control' /></td>
                 </tr>
                 <tr>
                     <td>First name</td>
@@ -118,7 +227,7 @@
                     <td>
                         <div class="row ms-5">
                             <div class="form-check col">
-                                <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault1" value="male">
+                                <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault1" value="male" checked>
                                 <label class="form-check-label" for="flexRadioDefault1">
                                     Male
                                 </label>
@@ -138,33 +247,10 @@
                     <td><input type='date' name='date_of_birth' class='form-control' /></td>
                 </tr>
                 <tr>
-                    <td>Registration Date & Time</td>
-                    <td><input type='date' name='registration_date_and_time' class='form-control' /></td>
-                </tr>
-                <tr>
-                    <td>Account status</td>
-                    <td>
-                        <div class="row ms-5">
-                            <div class="form-check col">
-                                <input class="form-check-input" type="radio" name="account_status" id="flexRadioDefault3" value="active">
-                                <label class="form-check-label" for="flexRadioDefault3">
-                                    Active
-                                </label>
-                            </div>
-                            <div class="form-check col">
-                                <input class="form-check-input" type="radio" name="account_status" id="flexRadioDefault4" value="inactive">
-                                <label class="form-check-label" for="flexRadioDefault4">
-                                    Inactive
-                                </label>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
                     <td></td>
                     <td>
                         <input type='submit' value='Save' class='btn btn-primary' />
-                        <!-- <a href='index.php' class='btn btn-danger'>Back to read products</a> -->
+                        <a href='customer_read.php' class='btn btn-danger'>Back to read customers</a>
                     </td>
                 </tr>
             </table>
