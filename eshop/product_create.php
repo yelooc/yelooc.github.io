@@ -28,6 +28,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-secondary" href="customer_create.php">Create Customer</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary" href="neworder_create.php">Create New Order</a>
+                        </li>
                         <li class="nav-item ">
                             <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
                         </li>

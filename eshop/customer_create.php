@@ -28,6 +28,9 @@
                         <li class="nav-item">
                             <a class="nav-link active text-white" href="#">Create Customer</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary" href="neworder_create.php">Create New Order</a>
+                        </li>
                         <li class="nav-item ">
                             <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
                         </li>
@@ -190,11 +193,7 @@
         }
 
         ?>
-
-        <?php
-
-        ?>
-
+        
         <!-- html form here where the product information will be entered -->
         <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
             <table class='table table-hover table-responsive table-bordered'>
