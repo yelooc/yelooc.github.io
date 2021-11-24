@@ -67,9 +67,9 @@
                 $username = $_POST['username'];
                 $email = $_POST['email'];
                 $password = $_POST['password'];
-                $crytp_password = md5($password);
+                // $crytp_password = md5($password);
                 $comfirm_password = $_POST['comfirm_password'];
-                $crytp_comfirm_password = md5($comfirm_password);
+                // $crytp_comfirm_password = md5($comfirm_password);
                 $firstname = $_POST['firstname'];
                 $lastname = $_POST['lastname'];
                 $gender = $_POST['gender'];
@@ -77,8 +77,8 @@
                 // bind the parameters
                 $stmt->bindParam(':username', $username);
                 $stmt->bindParam(':email', $email);
-                $stmt->bindParam(':password', $crytp_password);
-                $stmt->bindParam(':comfirm_password', $crytp_comfirm_password);
+                $stmt->bindParam(':password', $password);
+                $stmt->bindParam(':comfirm_password', $comfirm_password);
                 $stmt->bindParam(':firstname', $firstname);
                 $stmt->bindParam(':lastname', $lastname);
                 $stmt->bindParam(':gender', $gender);
