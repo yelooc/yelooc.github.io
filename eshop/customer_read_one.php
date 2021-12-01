@@ -72,17 +72,17 @@
                 <td><?php echo htmlspecialchars($gender, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
+                <td>Account Status</td>
+                <td><?php echo htmlspecialchars($account_status, ENT_QUOTES);  ?></td>
+            </tr>
+            <tr>
                 <td>Date Of Birth</td>
                 <td><?php echo htmlspecialchars($date_of_birth, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
                 <td>Registration Date And Time</td>
                 <td><?php echo htmlspecialchars($registration_date_and_time, ENT_QUOTES);  ?></td>
-            </tr>
-            <tr>
-                <td>Account Status</td>
-                <td><?php echo htmlspecialchars($account_status, ENT_QUOTES);  ?></td>
-            </tr>
+            </tr> 
             <tr>
                 <td></td>
                 <td>

@@ -130,33 +130,49 @@
 
 
         if ($_POST) {
-            //var_dump($_POST);
+
             $flag = 0;
-            $product_flag = 0;
-            $fail_flag = 0;
+            $callselect_at_least_flag = 0;
+            $callselectquantity_flag = 0;
+            $callselectproduct_flag = 0;
             $message = '';
 
 
             for ($count1 = 0; $count1 < count($_POST['product']); $count1++) {
                 if (!empty($_POST['product'][$count1]) && !empty($_POST['quantity'][$count1])) {
-                    $product_flag++;
+                    $callselect_at_least_flag++;
                 }
-                if (empty($_POST['product'][$count1]) || empty($_POST['quantity'][$count1])) {
-                    $fail_flag++;
+                if (!empty($_POST['product'][$count1]) && empty($_POST['quantity'][$count1])) {
+                    $callselectquantity_flag++;
                 }
+                if (empty($_POST['product'][$count1]) && !empty($_POST['quantity'][$count1])) {
+                    $callselectproduct_flag++;
+                }
+            }
+
+            // var_dump($_POST['product']);
+            // var_dump($_POST['quantity']);
+            print_r(array_unique($_POST['product']));
+
+            if (count($_POST['product']) !== count(array_unique($_POST['product']))) {
+                $flag = 1;
+                $message = 'Duplicate product is not allowed.';
+            }
+            if ($callselect_at_least_flag < 1) {
+                $flag = 1;
+                $message = 'Please select the at least one product';
+            }
+            if ($callselectquantity_flag > 0) {
+                $flag = 1;
+                $message = 'please select quantity';
+            }
+            if ($callselectproduct_flag > 0) {
+                $flag = 1;
+                $message = 'Please select product';
             }
             if (empty($_POST['customer_username'])) {
                 $flag = 1;
                 $message = 'Please select Username.';
-            } elseif ($product_flag < 1) {
-                $flag = 1;
-                $message = 'Please select the at least one prouct and the associated quantity';
-            } elseif ($fail_flag > 0) {
-                $flag = 1;
-                $message = 'Please enter prouct and the associated quantity';
-            } elseif (count($_POST['product']) !== count(array_unique($_POST['product']))) {
-                $flag = 1;
-                $message = 'Duplicate product is not allowed.';
             }
 
             try {
@@ -236,20 +252,20 @@
                 //     $post_product = 1;
                 // }
                 //算有多少个product row当submit过后
-                $post_product = $_POST ? count($_POST['product']) : 1;
-                $array = array('');
+                // $post_product = $_POST ? count($_POST['product']) : 1;
+               
                 //result save data after
                 // for ($product_row = 0; $product_row < $post_product; $product_row++) {
-
+                    $array = array('');
                 if ($_POST) {
                     for ($y = 0; $y <= count($_POST['product']); $y++) {
-                        if (empty($_POST['product'][$y]) && empty($_POST['quantity'][$y])) {
+                            if (empty($_POST['product'][$y]) && empty($_POST['quantity'][$y])) {
 
-                            unset($_POST['product'][$y]);
-                            unset($_POST['quantity'][$y]);
-                        }
+                                unset($_POST['product'][$y]);
+                                unset($_POST['quantity'][$y]);
+                            }    
                     }
-                    $arrayP = $_POST['product'];
+                    $array = $_POST['product'];
                 }
                 foreach ($array as $product_row => $product_ID) {
                 ?>
@@ -257,9 +273,9 @@
                         <td>Product</td>
                         <td>
                             <select class="form-control fs-6 rounded" name="product[]">
-                                <option value=""></option>
+                                <option></option>
                                 <?php
-                                $product_list = $_POST ? $_POST['product'] : '[]';
+                                $product_list = $_POST ? $_POST['product'] : ' ';
                                 for ($pcount = 0; $pcount < count($product_arrName); $pcount++) {
                                     //第几个value ID是selected        //第几个product row
                                     $selected_product = $product_arrID[$pcount] == $product_list[$product_row] ? 'selected' : '';

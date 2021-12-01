@@ -8,7 +8,7 @@
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, name, description, price FROM products WHERE id = :id ";
+            $query = "SELECT * FROM products WHERE product_id = :id ";
             $stmt = $con->prepare($query);
 
             // Bind the parameter
@@ -21,9 +21,10 @@
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // values to fill up our form
-            $name = $row['name'];
-            $description = $row['description'];
-            $price = $row['price'];
+            extract($row);
+            // $name = $row['name'];
+            // $description = $row['description'];
+            // $price = $row['price'];
             // shorter way to do that is extract($row)
         }
 
@@ -60,6 +61,18 @@
             <tr>
                 <td>Price</td>
                 <td><?php echo htmlspecialchars($price, ENT_QUOTES);  ?></td>
+            </tr>
+            <tr>
+                <td>Promotion Price</td>
+                <td><?php echo htmlspecialchars($promotionprice, ENT_QUOTES);  ?></td>
+            </tr>
+            <tr>
+                <td>Manufacture Date</td>
+                <td><?php echo htmlspecialchars($manufacturedate, ENT_QUOTES);  ?></td>
+            </tr>
+            <tr>
+                <td>Expired Date</td>
+                <td><?php echo htmlspecialchars($expireddate, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
                 <td></td>

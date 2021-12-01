@@ -30,6 +30,7 @@ try {
     $password = $row['password'];
     $account_status = $row['account_status'];
     // shorter way to do that is extract($row)
+  
 }
 
 // show error
@@ -241,9 +242,6 @@ if ($_POST) {
                 <tr>
                     <td>Gender</td>
                     <td>
-                    $selected_username = $row['username'] == $_POST['customer_username'] ? 'selected' : '';
-                                    echo "<option class='bg-white' value='{$username}'$selected_username>$username</option>";
-            
                         <div class="row ms-5">
                             <div class="form-check col">
                                 <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault1" value="male" <?php if ($row['gender'] == "male") { ?>checked <?php } ?>>

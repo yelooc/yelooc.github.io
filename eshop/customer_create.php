@@ -105,7 +105,7 @@
                 if (!preg_match("/[a-zA-Z-0-9]{1,}/", $firstname)) {
                     $message = "First Name cannot be empty";
                     $flag = 1;
-                }else{
+                } else {
                     if (preg_match("/\s/", $firstname)) {
                         $message = "First Name cannot contain space";
                         $flag = 1;
@@ -151,7 +151,7 @@
                         $message = "Email must include @ and .";
                         $flag = 1;
                     }
-                    if (substr($email,-5,-4) == '@'){
+                    if (substr($email, -5, -4) == '@') {
                         $message = "You must fill in xxxxx@gmail.com or others example hotmail, yahoo";
                         $flag = 1;
                     }
@@ -193,7 +193,7 @@
         }
 
         ?>
-        
+
         <!-- html form here where the product information will be entered -->
         <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
             <table class='table table-hover table-responsive table-bordered'>

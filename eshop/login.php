@@ -43,6 +43,7 @@
                     $message = 'Your Account is suspended';
                 }
             }
+            
             if ($_POST['username'] == $row['username'] && $_POST['password'] != $row['password']) {
                 $flag = 1;
                 $message = 'Incorrect Password';
