@@ -1,29 +1,3 @@
-<?php
-include 'config/database.php';
-
-// delete message prompt will be here
-
-// select all data
-$query = "SELECT * FROM products ORDER BY product_id DESC";
-$stmt1 = $con->prepare($query);
-$stmt1->execute();
-
-$product_arrID = array();
-$product_arrName = array();
-
-while ($row = $stmt1->fetch(PDO::FETCH_ASSOC)) {
-
-    extract($row);
-    array_push($product_arrID, $row['product_id']);
-    array_push($product_arrName, $row['name']);
-}
-
-
-$query_customer = "SELECT * FROM customers ORDER BY username DESC";
-$stmt_customer = $con->prepare($query_customer);
-$stmt_customer->execute();
-?>
-
 <!DOCTYPE HTML>
 <html>
 
@@ -128,48 +102,62 @@ $stmt_customer->execute();
 
         <?php
 
-        if ($_POST) {
 
+        include 'config/database.php';
+
+        // delete message prompt will be here
+
+        // select all data
+        $query = "SELECT * FROM products ORDER BY product_id DESC";
+        $stmt1 = $con->prepare($query);
+        $stmt1->execute();
+
+        $product_arrID = array();
+        $product_arrName = array();
+
+        while ($row = $stmt1->fetch(PDO::FETCH_ASSOC)) {
+
+            extract($row);
+            array_push($product_arrID, $row['product_id']);
+            array_push($product_arrName, $row['name']);
+        }
+
+
+        $query_customer = "SELECT * FROM customers ORDER BY username DESC";
+        $stmt_customer = $con->prepare($query_customer);
+        $stmt_customer->execute();
+
+
+
+        if ($_POST) {
+            //var_dump($_POST);
             $flag = 0;
-            $callselect_at_least_flag = 0;
-            $callselectquantity_flag = 0;
-            $callselectproduct_flag = 0;
+            $product_flag = 0;
+            $fail_flag = 0;
             $message = '';
 
 
-            for ($count1 = 0; $count1 < count($_POST['product_name']); $count1++) {
-                if (!empty($_POST['product_name'][$count1]) && !empty($_POST['quantity'][$count1])) {
-                    $callselect_at_least_flag++;
+            for ($count1 = 0; $count1 < count($_POST['product']); $count1++) {
+                if (!empty($_POST['product'][$count1]) && !empty($_POST['quantity'][$count1])) {
+                    $product_flag++;
                 }
-                if (!empty($_POST['product_name'][$count1]) && empty($_POST['quantity'][$count1])) {
-                    $callselectquantity_flag++;
+                if (empty($_POST['product'][$count1]) || empty($_POST['quantity'][$count1])) {
+                    $fail_flag++;
                 }
-                if (empty($_POST['product_name'][$count1]) && !empty($_POST['quantity'][$count1])) {
-                    $callselectproduct_flag++;
-                }
-            }
-
-            if ($callselect_at_least_flag < 1) {
-                $flag = 1;
-                $message = 'Please select the at least one product';
-            }
-            if ($callselectquantity_flag > 0) {
-                $flag = 1;
-                $message = 'The quantity cannot be 0';
-            }
-            if ($callselectproduct_flag > 0) {
-                $flag = 1;
-                $message = 'Please select product';
-            }
-            if (count($_POST['product_name']) !== count(array_unique($_POST['product_name']))) {
-                $flag = 1;
-                $message = 'Duplicate product is not allowed.';
             }
             if (empty($_POST['customer_username'])) {
                 $flag = 1;
                 $message = 'Please select Username.';
+            } elseif ($product_flag < 1) {
+                $flag = 1;
+                $message = 'Please select the at least one prouct and the associated quantity';
+            } elseif ($fail_flag > 0) {
+                $flag = 1;
+                $message = 'Please enter prouct and the associated quantity';
+            } elseif (count($_POST['product']) !== count(array_unique($_POST['product']))) {
+                $flag = 1;
+                $message = 'Duplicate product is not allowed.';
             }
-
 
             try {
                 // insert query
@@ -187,14 +175,14 @@ $stmt_customer->execute();
                     if ($stmt->execute()) {
 
                         $last_id = $con->lastInsertid();
-                        for ($count = 0; $count < count($_POST['product_name']); $count++) {
+                        for ($count = 0; $count < count($_POST['product']); $count++) {
 
                             $query2 = "INSERT INTO order_details SET order_id=:order_id, product_id=:product_id, quantity=:quantity";
                             $stmt = $con->prepare($query2);
                             $stmt->bindParam('order_id', $last_id);
-                            $stmt->bindParam('product_id', $_POST['product_name'][$count]);
+                            $stmt->bindParam('product_id', $_POST['product'][$count]);
                             $stmt->bindParam('quantity', $_POST['quantity'][$count]);
-                            if (!empty($_POST['product_name'][$count]) && !empty($_POST['quantity'][$count])) {
+                            if (!empty($_POST['product'][$count]) && !empty($_POST['quantity'][$count])) {
                                 $stmt->execute();
                             }
                         }
@@ -215,7 +203,6 @@ $stmt_customer->execute();
             }
         }
         ?>
-
         <!-- html form here where the product information will be entered -->
         <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
 
@@ -226,7 +213,7 @@ $stmt_customer->execute();
                     <td>
                         <div class="input-group mb-3">
                             <select class="form-control fs-6 rounded" name="customer_username">
-                                <option class='bg-white' selected></option>
+                                <option class='bg-white'></option>
                                 <?php
                                 while ($row = $stmt_customer->fetch(PDO::FETCH_ASSOC)) {
                                     extract($row);
@@ -240,29 +227,57 @@ $stmt_customer->execute();
 
                     </td>
                 </tr>
-                <tr class="productRow">
-                    <td>Order</td>
-                    <td>
-                        <select class="form-control fs-6 rounded" name="product_name[]">
-                            <option class='bg-white' value="">Product List</option>
-                            <?php
-                            for ($pcount = 0; $pcount < count($product_arrName); $pcount++) {
-                                $selected_product = $product_arrID[$pcount] == $_POST['product_name'][0] ? 'selected' : '';
-                                echo "<option class='bg-white' value='" . $product_arrID[$pcount] . "'$selected_product>" . $product_arrName[$pcount] . "</option>";
-                            }
-                            ?>
-                        </select>
-                    <td>
-                        <select class="form-control" name="quantity[]">
-                            <option value=''>Please Select Your Quantity</option>
-                            <?php
-                            for ($quantity = 1; $quantity <= 5; $quantity++) {
-                                $selected_quantity = $quantity == $_POST['quantity'][0] ? 'selected' : '';
-                                echo "<option value='$quantity' $selected_quantity>$quantity</option>";
-                            }
-                            ?>
-                    </td>
-                    <!-- <div class="row">
+
+                <?php
+                // if ($_POST){ 
+                // $post_product = count($_POST['product']);
+
+                // }else{
+                //     $post_product = 1;
+                // }
+                //算有多少个product row当submit过后
+                $post_product = $_POST ? count($_POST['product']) : 1;
+                $array = array('');
+                //result save data after
+                // for ($product_row = 0; $product_row < $post_product; $product_row++) {
+
+                if ($_POST) {
+                    for ($y = 0; $y <= count($_POST['product']); $y++) {
+                        if (empty($_POST['product'][$y]) && empty($_POST['quantity'][$y])) {
+
+                            unset($_POST['product'][$y]);
+                            unset($_POST['quantity'][$y]);
+                        }
+                    }
+                    $arrayP = $_POST['product'];
+                }
+                foreach ($array as $product_row => $product_ID) {
+                ?>
+                    <tr class="productRow">
+                        <td>Product</td>
+                        <td>
+                            <select class="form-control fs-6 rounded" name="product[]">
+                                <option value=""></option>
+                                <?php
+                                $product_list = $_POST ? $_POST['product'] : '[]';
+                                for ($pcount = 0; $pcount < count($product_arrName); $pcount++) {
+                                    //第几个value ID是selected        //第几个product row
+                                    $selected_product = $product_arrID[$pcount] == $product_list[$product_row] ? 'selected' : '';
+                                    echo "<option value='" . $product_arrID[$pcount] . "'$selected_product>" . $product_arrName[$pcount] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        <td>
+                            <select class="form-control" name="quantity[]">
+                                <option value="">Please Select Your Quantity</option>
+                                <?php
+                                for ($quantity = 1; $quantity <= 5; $quantity++) {
+                                    $selected_quantity = $quantity == $_POST['quantity'][$product_row] ? 'selected' : '';
+                                    echo "<option value='$quantity' $selected_quantity>$quantity</option>";
+                                }
+                                ?>
+                        </td>
+                        <!-- <div class="row">
                             <div class="col">
                                 <button type="button" id="decrease1" class="btn btn-primary btn btn-lg" disabled onclick="minus()">-</button>
 
@@ -271,8 +286,11 @@ $stmt_customer->execute();
                                 <button type="button" id="increase1" class="btn btn-primary btn btn-lg" onclick="plus()">+</button>
                             </div>
                         </div> -->
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                <?php
+                }
+                ?>
                 <tr>
                     <td>
                         <button type="button" class="add_one btn btn-primary">Add More Product</button>
