@@ -5,64 +5,6 @@
     <title>PDO - Create a Record - PHP CRUD Tutorial</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
-<!-- <script>
-    function plus() {
-        var a = document.getElementById("box1").value;
-        document.getElementById("box1").value = parseInt(a) + 1;
-        if (a == 1) {
-            document.getElementById("decrease1").disabled = false;
-        }
-    }
-
-    function minus() {
-        var a = document.getElementById("box1").value;
-        document.getElementById("box1").value = parseInt(a) - 1;
-        if (a == 2 || a == 1) {
-            document.getElementById("decrease1").disabled = true;
-        }
-    }
-
-    function plus2() {
-        var a = document.getElementById("box2").value;
-        document.getElementById("box2").value = parseInt(a) + 1;
-        if (a == 1) {
-            document.getElementById("decrease2").disabled = false;
-        }
-    }
-
-    function minus2() {
-        var a = document.getElementById("box2").value;
-        document.getElementById("box2").value = parseInt(a) - 1;
-        if (a == 2 || a == 1) {
-            document.getElementById("decrease2").disabled = true;
-        }
-    }
-
-    function plus3() {
-        var a = document.getElementById("box3").value;
-        document.getElementById("box3").value = parseInt(a) + 1;
-        if (a == 1) {
-            document.getElementById("decrease3").disabled = false;
-        }
-    }
-
-    function minus3() {
-        var a = document.getElementById("box3").value;
-        document.getElementById("box3").value = parseInt(a) - 1;
-        if (a == 2 || a == 1) {
-            document.getElementById("decrease3").disabled = true;
-        }
-    }
-
-    var specialKeys = new Array();
-    specialKeys.push(8); //Backspace
-    function IsNumeric(e) {
-        var keyCode = e.which ? e.which : e.keyCode
-        var ret = ((keyCode >= 48 && keyCode <= 57) || specialKeys.indexOf(keyCode) != -1);
-        document.getElementById("box1").style.display = ret ? "" : "inline";
-        return ret;
-    }
-</script> -->
 
 <body>
 
@@ -76,17 +18,32 @@
                         <li class="nav-item">
                             <a class="nav-link text-secondary" href="home.php">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="product_create.php">Create Product</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
+                                Product
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="product_create.php">Create Product</a></li>
+                                <li><a class="dropdown-item" href="product_read.php">Product Listing</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="customer_create.php">Create Customer</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
+                                Customer
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="customer_create.php">Create Customer</a></li>
+                                <li><a class="dropdown-item" href="customer_read.php">Customer Listing</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link active text-white" href="neworder_create.php">Create New Order</a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active text-white" href="#" role="button" data-bs-toggle="dropdown">
+                                Order
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item bg-secondary" href="#">Create New Order</a></li>
+                                <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -128,7 +85,7 @@
         $stmt_customer->execute();
 
 
-
+      
         if ($_POST) {
             //var_dump($_POST);
             $flag = 0;
@@ -144,20 +101,23 @@
                 if (empty($_POST['product'][$count1]) || empty($_POST['quantity'][$count1])) {
                     $fail_flag++;
                 }
-            }
+           
             if (empty($_POST['customer_username'])) {
                 $flag = 1;
                 $message = 'Please select Username.';
             } elseif ($product_flag < 1) {
                 $flag = 1;
-                $message = 'Please select the at least one product and the associated quantity';
+                $message = 'Please select the at least one prouct and the associated quantity';
             } elseif ($fail_flag > 0) {
                 $flag = 1;
-                $message = 'Please enter product and the associated quantity';
+                $message = 'Please enter prouct and the associated quantity';
             } elseif (count($_POST['product']) !== count(array_unique($_POST['product']))) {
                 $flag = 1;
                 $message = 'Duplicate product is not allowed.';
+                unset($_POST['product'][$count1]);
+                unset($_POST['quantity'][$count1]);
             }
+        }
 
             try {
                 // insert query
@@ -167,7 +127,6 @@
                 $customer_username = $_POST['customer_username'];
                 // bind the parameters
                 $stmt->bindParam(':customer_username', $customer_username);
-                // $total_amount = $_POST['quantity'][$count] * $_POST['total_amount'];
                 $purchase_date = date('Y-m-d H:i:s'); // get the current date and time
                 $stmt->bindParam(':purchase_date', $purchase_date);
 
@@ -212,8 +171,8 @@
                     <td>Customer's Username</td>
                     <td>
                         <div class="input-group mb-3">
-                            <select class="form-control fs-6 rounded" name="customer_username">
-                                <option class='bg-white'></option>
+                            <select class="form-select form-select fs-6 rounded" name="customer_username">
+                                <option value="">Username</option>
                                 <?php
                                 while ($row = $stmt_customer->fetch(PDO::FETCH_ASSOC)) {
                                     extract($row);
@@ -237,7 +196,7 @@
                 // }
                 //算有多少个product row当submit过后
                 // $post_product = $_POST ? count($_POST['product']) : 1;
-                
+
                 //result save data after
                 // for ($product_row = 0; $product_row < $post_product; $product_row++) {
                 $array = array('');
@@ -249,26 +208,30 @@
                             unset($_POST['quantity'][$y]);
                         }
                     }
-                    $arrayP = $_POST['product'];
+                    if (count($_POST['product']) == 0) {
+                        $array = array('');
+                    } else {
+                        $array = $_POST['product'];
+                    }
                 }
                 foreach ($array as $product_row => $product_ID) {
                 ?>
                     <tr class="productRow">
                         <td>Product</td>
                         <td>
-                            <select class="form-control fs-6 rounded" name="product[]">
-                                <option value=""></option>
+                            <select class="form-control form-select fs-6 rounded" name="product[]">
+                                <option value="">Product List</option>
                                 <?php
-                                $product_list = $_POST ? $_POST['product'] : '';
+                                $product_list = $_POST ? $_POST['product'] : ' ';
                                 for ($pcount = 0; $pcount < count($product_arrName); $pcount++) {
                                     //第几个value ID是selected        //第几个product row
-                                    $selected_product = $product_arrID[$pcount] == $$_POST['product'][$product_row] ? 'selected' : '';
+                                    $selected_product = $product_arrID[$pcount] == $product_list[$product_row] ? 'selected' : '';
                                     echo "<option value='" . $product_arrID[$pcount] . "'$selected_product>" . $product_arrName[$pcount] . "</option>";
                                 }
                                 ?>
                             </select>
                         <td>
-                            <select class="form-control" name="quantity[]">
+                            <select class="form-control form-select" name="quantity[]">
                                 <option value="">Please Select Your Quantity</option>
                                 <?php
                                 for ($quantity = 1; $quantity <= 5; $quantity++) {
@@ -277,15 +240,6 @@
                                 }
                                 ?>
                         </td>
-                        <!-- <div class="row">
-                            <div class="col">
-                                <button type="button" id="decrease1" class="btn btn-primary btn btn-lg" disabled onclick="minus()">-</button>
-
-                                <input type="text" name="quantity[]" onkeypress="return IsNumeric(event);" ondrop="return false;" onpaste="return false;" class="col-2 btn btn-lg border border-dark" id="box1" value="1" />
-
-                                <button type="button" id="increase1" class="btn btn-primary btn btn-lg" onclick="plus()">+</button>
-                            </div>
-                        </div> -->
                         </td>
                     </tr>
                 <?php
@@ -297,7 +251,7 @@
                         <button type="button" class="delete_one btn btn-danger">Delete Last Product</button>
                     </td>
                     <td>
-                        <input type='submit' value='Order' class='btn btn-primary' />
+                        <input type='submit' value='Save' class='btn btn-primary' />
                         <a href='neworder_read.php' class='btn btn-danger'>Back to read order</a>
                     </td>
                 </tr>

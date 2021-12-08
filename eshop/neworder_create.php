@@ -5,6 +5,7 @@
     <title>PDO - Create a Record - PHP CRUD Tutorial</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
+
 <body>
 
     <div class="container-fuild bg-dark">
@@ -17,17 +18,32 @@
                         <li class="nav-item">
                             <a class="nav-link text-secondary" href="home.php">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="product_create.php">Create Product</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
+                                Product
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="product_create.php">Create Product</a></li>
+                                <li><a class="dropdown-item" href="product_read.php">Product Listing</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="customer_create.php">Create Customer</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
+                                Customer
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="customer_create.php">Create Customer</a></li>
+                                <li><a class="dropdown-item" href="customer_read.php">Customer Listing</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link active text-white" href="neworder_create.php">Create New Order</a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active text-white" href="#" role="button" data-bs-toggle="dropdown">
+                                Order
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item bg-secondary" href="#">Create New Order</a></li>
+                                <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -68,8 +84,6 @@
         $stmt_customer = $con->prepare($query_customer);
         $stmt_customer->execute();
 
-
-
         if ($_POST) {
 
             $flag = 0;
@@ -77,7 +91,6 @@
             $callselectquantity_flag = 0;
             $callselectproduct_flag = 0;
             $message = '';
-
 
             for ($count1 = 0; $count1 < count($_POST['product']); $count1++) {
                 if (!empty($_POST['product'][$count1]) && !empty($_POST['quantity'][$count1])) {
@@ -94,11 +107,12 @@
             // var_dump($_POST['product']);
             // var_dump($_POST['quantity']);
             // print_r(array_unique($_POST['product']));
-
             if (count($_POST['product']) !== count(array_unique($_POST['product']))) {
                 $flag = 1;
                 $message = 'Duplicate product is not allowed.';
+    
             }
+
             if ($callselect_at_least_flag < 1) {
                 $flag = 1;
                 $message = 'Please select the at least one product';
@@ -168,8 +182,8 @@
                     <td>Customer's Username</td>
                     <td>
                         <div class="input-group mb-3">
-                            <select class="form-control fs-6 rounded" name="customer_username">
-                                <option class='bg-white'></option>
+                            <select class="form-select form-select fs-6 rounded" name="customer_username">
+                                <option value="">Username</option>
                                 <?php
                                 while ($row = $stmt_customer->fetch(PDO::FETCH_ASSOC)) {
                                     extract($row);
@@ -204,16 +218,25 @@
                             unset($_POST['product'][$y]);
                             unset($_POST['quantity'][$y]);
                         }
+                        if (count($_POST['product']) != count(array_unique($_POST['product']))) {
+                    
+                            unset($_POST['product'][$y]);
+                            unset($_POST['quantity'][$y]);
+                        }
                     }
-                    $array = $_POST['product'];
+                    if (count($_POST['product']) == 0) {
+                        $array = array('');
+                    } else {
+                        $array = $_POST['product'];
+                    }
                 }
                 foreach ($array as $product_row => $product_ID) {
                 ?>
                     <tr class="productRow">
                         <td>Product</td>
                         <td>
-                            <select class="form-control fs-6 rounded" name="product[]">
-                                <option></option>
+                            <select class="form-control form-select fs-6 rounded" name="product[]">
+                                <option value="">Product List</option>
                                 <?php
                                 $product_list = $_POST ? $_POST['product'] : ' ';
                                 for ($pcount = 0; $pcount < count($product_arrName); $pcount++) {
@@ -224,7 +247,7 @@
                                 ?>
                             </select>
                         <td>
-                            <select class="form-control" name="quantity[]">
+                            <select class="form-control form-select" name="quantity[]">
                                 <option value="">Please Select Your Quantity</option>
                                 <?php
                                 for ($quantity = 1; $quantity <= 5; $quantity++) {

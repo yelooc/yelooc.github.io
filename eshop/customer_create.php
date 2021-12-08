@@ -22,17 +22,32 @@
                         <li class="nav-item">
                             <a class="nav-link text-secondary" href="home.php">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="product_create.php">Create Product</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
+                                Product
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="product_create.php">Create Product</a></li>
+                                <li><a class="dropdown-item" href="product_read.php">Product Listing</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link active text-white" href="#">Create Customer</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active text-white" href="#" role="button" data-bs-toggle="dropdown">
+                                Customer
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item bg-secondary" href="#">Create Customer</a></li>
+                                <li><a class="dropdown-item" href="customer_read.php">Customer Listing</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="neworder_create.php">Create New Order</a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
+                                Order
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="neworder_create.php">Create New Order</a></li>
+                                <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -56,7 +71,6 @@
                 // insert query
                 $query = "INSERT INTO customers SET username=:username, 
                 email=:email, password=:password,
-                comfirm_password=:comfirm_password,
                 firstname=:firstname, 
                 lastname=:lastname,
                 gender=:gender, 
@@ -68,20 +82,16 @@
                 $email = $_POST['email'];
                 $password = $_POST['password'];
                 // $crytp_password = md5($password);
-                $comfirm_password = $_POST['comfirm_password'];
-                // $crytp_comfirm_password = md5($comfirm_password);
                 $firstname = $_POST['firstname'];
-                $lastname = $_POST['lastname'];
-                $gender = $_POST['gender'];
+                $lastname = $_POST['lastname'];  
                 $date_of_birth = $_POST['date_of_birth'];
                 // bind the parameters
                 $stmt->bindParam(':username', $username);
                 $stmt->bindParam(':email', $email);
                 $stmt->bindParam(':password', $password);
-                $stmt->bindParam(':comfirm_password', $comfirm_password);
                 $stmt->bindParam(':firstname', $firstname);
                 $stmt->bindParam(':lastname', $lastname);
-                $stmt->bindParam(':gender', $gender);
+                $stmt->bindParam(':gender', $_POST['gender']);
                 $stmt->bindParam(':date_of_birth', $date_of_birth);
                 // Execute the query  
                 $flag = 0;
@@ -98,6 +108,10 @@
                         $flag = 1;
                     }
                 }
+                if (!preg_match("/[a-zA-Z0-9]{1,}/", $_POST['gender'])) {
+                    $message = "Please select your gender";
+                    $flag = 1;
+                }
                 if (!preg_match("/[a-zA-Z0-9]{1,}/", $lastname)) {
                     $message = "Last Name cannot be empty";
                     $flag = 1;
@@ -111,12 +125,12 @@
                         $flag = 1;
                     }
                 }
-                if (!preg_match("/[a-zA-Z0-9]{1,}/", $comfirm_password)) {
+                if (!preg_match("/[a-zA-Z0-9]{1,}/", $_POST['comfirm_password'])) {
                     $message = "Comfirm Password cannot be empty";
                     $flag = 1;
                 } else {
                     //comfirm password validation
-                    if ($comfirm_password != $password) {
+                    if ($_POST['comfirm_password'] != $password) {
                         $message = "Comfirm Password should fill same with password";
                         $flag = 1;
                     }
@@ -226,7 +240,7 @@
                     <td>
                         <div class="row ms-5">
                             <div class="form-check col">
-                                <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault1" value="male" checked>
+                                <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault1" value="male">
                                 <label class="form-check-label" for="flexRadioDefault1">
                                     Male
                                 </label>

@@ -40,7 +40,21 @@ catch (PDOException $exception) {
 
 ?>
 
-<?php
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>PDO - Read One Record - PHP CRUD Tutorial</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Update Customer</h1>
+        </div>
+
+        <?php
 // check if form was submitted
 if ($_POST) {
     try {
@@ -49,7 +63,7 @@ if ($_POST) {
         // it is better to label them and not use question marks
         $query = "UPDATE customers
                   SET username=:username, firstname=:firstname,
-                  lastname=:lastname, email=:email, gender=:gender, date_of_birth=:date_of_birth, password=:new_password, comfirm_password=:comfirm_password, account_status=:account_status WHERE username = :username";
+                  lastname=:lastname, email=:email, gender=:gender, date_of_birth=:date_of_birth, password=:new_password, account_status=:account_status WHERE username = :username";
         // prepare query for excecution
         $stmt = $con->prepare($query);
         // posted values
@@ -60,7 +74,6 @@ if ($_POST) {
         $gender = htmlspecialchars(strip_tags($_POST['gender']));
         $date_of_birth = htmlspecialchars(strip_tags($_POST['date_of_birth']));
         $new_password = htmlspecialchars(strip_tags($_POST['new_password']));
-        $comfirm_password = htmlspecialchars(strip_tags($_POST['comfirm_password']));
         $account_status = htmlspecialchars(strip_tags($_POST['account_status']));
         // bind the parameters
         $stmt->bindParam(':username', $id);
@@ -70,7 +83,6 @@ if ($_POST) {
         $stmt->bindParam(':gender', $gender);
         $stmt->bindParam(':date_of_birth', $date_of_birth);
         $stmt->bindParam(':new_password', $new_password);
-        $stmt->bindParam(':comfirm_password', $comfirm_password);
         $stmt->bindParam(':account_status', $account_status);
         // Execute the query
         $flag = 0;
@@ -79,9 +91,7 @@ if ($_POST) {
         if (empty($_POST['old_pasword']) && empty($_POST['new_password']) && empty($_POST['comfirm_password'])) {
             $flag = 0;
             $unwork_change_new_password = htmlspecialchars(strip_tags($row['password']));
-            $unwork_change_comfirm_password = htmlspecialchars(strip_tags($row['password']));
             $stmt->bindParam(':new_password', $unwork_change_new_password);
-            $stmt->bindParam(':comfirm_password', $unwork_change_comfirm_password);
         }
 
         if (!preg_match("/[a-zA-Z0-9]{1,}/", $username)) {
@@ -166,7 +176,6 @@ if ($_POST) {
                         $message = "New Password cannot contain space";
                         $flag = 1;
                     }
-
                     if ($_POST['new_password'] == $_POST['old_password']) {
                         $flag = 1;
                         $message = "new password cannot same with old password";
@@ -194,20 +203,6 @@ if ($_POST) {
 }
 ?>
 
-<!DOCTYPE HTML>
-<html>
-
-<head>
-    <title>PDO - Read One Record - PHP CRUD Tutorial</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-</head>
-
-<body>
-    <div class="container">
-        <div class="page-header">
-            <h1>Update Customer</h1>
-        </div>
-
         <!--we have our html table here where the record will be displayed-->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post">
             <table class='table table-hover table-responsive table-bordered'>
@@ -226,18 +221,6 @@ if ($_POST) {
                 <tr>
                     <td>Email</td>
                     <td><input type='text' name='email' value="<?php echo htmlspecialchars($email, ENT_QUOTES);  ?>" class='form-control' /></td>
-                </tr>
-                <tr>
-                    <td>Old Password</td>
-                    <td><input type='text' name='old_password' class='form-control' /></td>
-                </tr>
-                <tr>
-                    <td>New Password</td>
-                    <td><input type='text' name='new_password' class='form-control' /></td>
-                </tr>
-                <tr>
-                    <td>Comfirm Password</td>
-                    <td><input type='text' name='comfirm_password' class='form-control' /></td>
                 </tr>
                 <tr>
                     <td>Gender</td>
@@ -260,6 +243,10 @@ if ($_POST) {
                     </td>
                 </tr>
                 <tr>
+                    <td>Date of birth</td>
+                    <td><input type='date' name='date_of_birth' class='form-control' value="<?php echo htmlspecialchars($date_of_birth, ENT_QUOTES);  ?>" /></td>
+                </tr>
+                <tr>
                     <td>Account Status</td>
                     <td>
                         <div class="row ms-5">
@@ -280,8 +267,16 @@ if ($_POST) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Date of birth</td>
-                    <td><input type='date' name='date_of_birth' class='form-control' value="<?php echo htmlspecialchars($date_of_birth, ENT_QUOTES);  ?>" /></td>
+                    <td>Old Password</td>
+                    <td><input type='password' name='old_password' class='form-control' /></td>
+                </tr>
+                <tr>
+                    <td>New Password</td>
+                    <td><input type='password' name='new_password' class='form-control' /></td>
+                </tr>
+                <tr>
+                    <td>Comfirm Password</td>
+                    <td><input type='password' name='comfirm_password' class='form-control' /></td>
                 </tr>
                 <tr>
                     <td></td>

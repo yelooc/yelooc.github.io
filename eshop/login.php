@@ -31,7 +31,9 @@
         $stmt->execute();
 
         $message = "";
+        $message1 = "";
         $flag = 0;
+        $flag_all = 0;
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
@@ -42,8 +44,12 @@
                     $flag = 1;
                     $message = 'Your Account is suspended';
                 }
+            }else{
+                    $flag_all_incorrect = 1;
+                    $message_all_incorrect = 'Incorrect username or password';
+                
             }
-            
+                
             if ($_POST['username'] == $row['username'] && $_POST['password'] != $row['password']) {
                 $flag = 1;
                 $message = 'Incorrect Password';
@@ -66,7 +72,14 @@
             echo "<div class='alert alert-danger'>";
             echo $message;
             echo "</div>";
+        }else{     
+            if ($flag_all_incorrect == 1){ 
+                echo "<div class='alert alert-danger'>";
+                echo $message_all_incorrect;
+                echo "</div>";
+            }
         }
+        
     }
     ?>
 

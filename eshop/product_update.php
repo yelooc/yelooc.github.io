@@ -34,7 +34,21 @@ catch (PDOException $exception) {
 }
 ?>
 
-<?php
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>PDO - Read One Record - PHP CRUD Tutorial</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Update Product</h1>
+        </div>
+
+        <?php
 // check if form was submitted
 if ($_POST) {
     try {
@@ -153,21 +167,8 @@ if ($_POST) {
     catch (PDOException $exception) {
         die('ERROR: ' . $exception->getMessage());
     }
-} ?>
-
-<!DOCTYPE HTML>
-<html>
-
-<head>
-    <title>PDO - Read One Record - PHP CRUD Tutorial</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-</head>
-
-<body>
-    <div class="container">
-        <div class="page-header">
-            <h1>Update Product</h1>
-        </div>
+} 
+?>
 
         <!--we have our html table here where the record will be displayed-->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post">

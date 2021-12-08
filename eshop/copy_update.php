@@ -51,7 +51,7 @@ include 'config/database.php';
             $orderID = $row2['order_id'];
 
             echo "<br><h6>Order ID : $orderID</h6>";
-            echo "<br><h6>Username : $cus_username</h6>";
+            echo "<br><h6>Username : <input type='text' value='$cus_username'/></h6>";
 
             echo "<table class='table table-hover table-responsive table-bordered'>"; //start table
 
@@ -72,8 +72,8 @@ include 'config/database.php';
                 extract($row);
                 echo "<td>$order_details_id</td>";
                 echo "<td>{$product_id}</td>";
-                echo "<td>{$name}</td>";
-                echo "<td>{$quantity}</td>";
+                echo "<td><input type='text' value='{$name}'/></td>";
+                echo "<td><input type='text' value='{$quantity}'/></td>";
                 echo "</tr>";
             }
 

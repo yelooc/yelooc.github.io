@@ -22,17 +22,32 @@
                         <li class="nav-item">
                             <a class="nav-link text-secondary" href="home.php">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link active text-white" href="#">Create Product</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active text-white" href="#" role="button" data-bs-toggle="dropdown">
+                                Product
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item bg-secondary" href="#">Create Product</a></li>
+                                <li><a class="dropdown-item" href="product_read.php">Product Listing</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="customer_create.php">Create Customer</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
+                                Customer
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="customer_create.php">Create Customer</a></li>
+                                <li><a class="dropdown-item" href="customer_read.php">Customer Listing</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="neworder_create.php">Create New Order</a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
+                                Order
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="neworder_create.php">Create New Order</a></li>
+                                <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
