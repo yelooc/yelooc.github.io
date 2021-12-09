@@ -104,9 +104,6 @@
                 }
             }
 
-            // var_dump($_POST['product']);
-            // var_dump($_POST['quantity']);
-            // print_r(array_unique($_POST['product']));
             if (count($_POST['product']) !== count(array_unique($_POST['product']))) {
                 $flag = 1;
                 $message = 'Duplicate product is not allowed.';
