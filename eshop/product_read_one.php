@@ -1,4 +1,5 @@
 <?php
+include 'session_login.php';
         // get passed parameter value, in this case, the record ID
         // isset() is a PHP function used to verify if a value is there or not
         $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
@@ -8,7 +9,7 @@
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT * FROM products WHERE product_id = :id ";
+            $query = "SELECT * FROM products WHERE product_id = :id";
             $stmt = $con->prepare($query);
 
             // Bind the parameter

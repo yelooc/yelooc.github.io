@@ -1,4 +1,5 @@
 <?php
+include 'session_login.php';
 include 'config/database.php';
 
 $tableContent = '';
@@ -165,7 +166,8 @@ if (isset($_POST['search'])) {
                 <?php
                 while ($row = $stmt_category->fetch(PDO::FETCH_ASSOC)) {
                     extract($row);
-                    echo "<option class='bg-white' value='$category_name'>$category_name</option>";
+                    $selected = $_POST['category'] == $category_name ? "selected" : "";
+                    echo "<option class='bg-white' value='$category_name'$selected>$category_name</option>";
                 }
                 ?>
             </select>

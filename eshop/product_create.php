@@ -1,6 +1,9 @@
 <!--ID : 2030346 -->
 <!--Name : NG WING Chun -->
 <!--Topic : Eshop Customer Create to insert the data in database(PDO Method)-->
+<?php 
+include 'session_login.php';
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -225,7 +228,7 @@
                             while ($row = $stmt_category->fetch(PDO::FETCH_ASSOC)) {
                                 extract($row);
                                 $selected_category = $row['id'] == $_POST['category_id'] ? 'selected' : '';
-                                echo "<option class='bg-white' value='{$id}'>$category_name</option>";
+                                echo "<option class='bg-white' value='{$id}'$selected_category>$category_name</option>";
                             }
                             ?>
                     </td>

@@ -1,5 +1,7 @@
 <?php
+include 'session_login.php';
 include 'config/database.php';
+
 
 // delete message prompt will be here
 
@@ -37,7 +39,7 @@ $num = $stmt->rowCount();
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <li><a class="dropdown-item" href="product_create.php">Create Product</a></li>
-                                <li><a class="dropdown-item" href="product_read">Product Listing</a></li>
+                                <li><a class="dropdown-item" href="product_read.php">Product Listing</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">

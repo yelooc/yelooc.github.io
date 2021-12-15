@@ -1,9 +1,11 @@
 <!--ID : 2030346 -->
 <!--Name : NG WING Chun -->
 <!--Topic : Eshop Customer Create to insert the data in database(PDO Method)-->
+<?php
+include 'session_login.php';
+?>
 <!DOCTYPE HTML>
 <html>
-
 <head>
     <title>Eshop Customer Create to insert the data in database(PDO Method)</title>
     <!-- Latest compiled and minified Bootstrap CSS -->

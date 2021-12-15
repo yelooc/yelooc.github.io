@@ -1,4 +1,5 @@
 <?php
+include 'session_login.php';
 include 'config/database.php';
 
 // delete message prompt will be here
