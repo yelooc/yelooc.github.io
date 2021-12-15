@@ -26,7 +26,7 @@ $num = $stmt->rowCount();
 
             <nav class="navbar-expand-lg py-2">
 
-                <div class="collapse navbar-collapse">
+                <div class="collapse navbar-collapse d-flex justify-content-between">
                     <ul class="navbar-nav mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link text-secondary" href="home.php">Home</a>
@@ -57,6 +57,11 @@ $num = $stmt->rowCount();
                                 <li><a class="dropdown-item" href="neworder_create.php">Create New Order</a></li>
                                 <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
                             </ul>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary" href="session_logout.php">Log Out</a>
                         </li>
                     </ul>
                 </div>

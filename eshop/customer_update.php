@@ -227,13 +227,13 @@ if ($_POST) {
                     <td>
                         <div class="row ms-5">
                             <div class="form-check col">
-                                <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault1" value="male" <?php if ($row['gender'] == "male") { ?>checked <?php } ?>>
+                                <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault1" value="male" <?php if ($row['gender'] == "male")  echo "checked"  ?>>
                                 <label class="form-check-label" for="flexRadioDefault1">
                                     Male
                                 </label>
                             </div>
                             <div class="form-check col">
-                                <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault2" value="female" <?php if ($row['gender'] == "female") { ?>checked <?php } ?>>
+                                <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault2" value="female" <?php if ($row['gender'] == "female")  echo "checked"  ?>>
                                 <label class="form-check-label" for="flexRadioDefault2">
                                     Female
                                 </label>

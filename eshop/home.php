@@ -1,6 +1,9 @@
 <!--ID : 2030346 -->
 <!--Name : NG WING Chun -->
 <!--Topic : Eshop Home-->
+<?php
+include 'session_login.php';
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -10,14 +13,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
-<body class="bg-image" style="background-image: url('img/wallpaper.jpg');">
+<body>
     <div class="container-fuild bg-dark">
         <div class="container">
 
             <nav class="navbar-expand-lg py-2">
 
-                <div class="collapse navbar-collapse">
-                    <ul class="navbar-nav mb-2 mb-lg-0">
+                <div class="collapse navbar-collapse d-flex justify-content-between">
+                    <ul class="navbar-nav">
                         <li class="nav-item">
                             <a class="nav-link active text-white" href="#">Home</a>
                         </li>
@@ -47,6 +50,11 @@
                                 <li><a class="dropdown-item" href="neworder_create.php">Create New Order</a></li>
                                 <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
                             </ul>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary" href="session_logout.php">Log Out</a>
                         </li>
                     </ul>
                 </div>

@@ -20,45 +20,15 @@
     <!-- Your Content Starts Here -->
 
     <?php
-    include 'config/database.php';
-
     session_start();
 
+    include 'config/database.php';
+
+
+    $message = "";
+    $flag = 0;
+
     if (isset($_POST['submit'])) {
-
-        $sql = "SELECT * FROM customers";
-        $stmt = $con->prepare($sql);
-        $stmt->execute();
-
-        $message = "";
-        $message1 = "";
-        $flag = 0;
-        $flag_all = 0;
-
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-
-            if ($_POST['username'] == $row['username'] && $_POST['password'] == $row['password']) {
-                if ($row['account_status'] == 'active') {
-                    header("Location:home.php");
-                } else {
-                    $flag = 1;
-                    $message = 'Your Account is suspended';
-                }
-            }else{
-                    $flag_all_incorrect = 1;
-                    $message_all_incorrect = 'Incorrect username or password';
-                
-            }
-                
-            if ($_POST['username'] == $row['username'] && $_POST['password'] != $row['password']) {
-                $flag = 1;
-                $message = 'Incorrect Password';
-            }
-            if ($_POST['username'] != $row['username'] && $_POST['password'] == $row['password']) {
-                $flag = 1;
-                $message = 'User not found (Invalid Account)';
-            }
-        }
 
         if (empty($_POST['password'])) {
             $flag = 1;
@@ -66,30 +36,63 @@
         }
         if (empty($_POST['username'])) {
             $flag = 1;
-            $message = "Please insert your username.";
+            $message = "Please insert your username or email.";
         }
-        if ($flag == 1) {
-            echo "<div class='alert alert-danger'>";
-            echo $message;
-            echo "</div>";
-        }else{     
-            if ($flag_all_incorrect == 1){ 
-                echo "<div class='alert alert-danger'>";
-                echo $message_all_incorrect;
-                echo "</div>";
+
+        if ($flag == 0) {
+            $username = $_POST['username'];
+            if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
+                $query = 'SELECT username, email, password, account_status from customers WHERE email= ?';
+            } else {
+                $query = 'SELECT username, email, password, account_status from customers WHERE username= ?';
+            }
+            $stmt = $con->prepare($query);
+            $stmt->bindParam(1, $username);
+            $stmt->execute();
+            $num = $stmt->rowCount();
+
+            if ($num > 0) {
+
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($_POST['password'] == $row['password']) {
+                    if ($row['account_status'] == 'active') {
+                        $_SESSION["correct_username"] = $_POST['username'];
+                        header("Location:home.php");
+                    } else {
+                        $flag = 1;
+                        $message = 'Your Account is suspended';
+                    }
+                } else {
+                    $flag = 1;
+                    $message = 'Incorrect username or password';
+                }
+            } else {
+                $flag = 1;
+                $message = 'User or Email not found (Invalid Account)';
             }
         }
-        
     }
     ?>
 
-
-
-
     <div class="d-flex justify-content-center">
         <form action="" class="col-3" method="POST">
-            <img src="IMG\sign in ui logo.png" class="mb-3" width="60px" alt="logo">
+            <img src="img\sign_in_ui_logo.png" class="mb-3" width="60px" alt="logo">
             <p class="mb-3 fs-5">Please sign in</p>
+            <?php
+            if (isset($_GET['msg']) && $_GET['msg']=='logout') {
+                echo "<div class='alert alert-success'>Log Out Succesful</div>";
+               }
+               if (isset($_GET['msg']) && $_GET['msg']=='pleaselogin'){
+                $flag = 1;
+                $message .= '<br>Please login first, then can access to next page.';
+               }
+            if (isset($flag) && $flag == 1) {
+                echo "<div class='alert alert-danger'>";
+                echo $message;
+                echo "</div>";
+            }
+            ?>
 
             <div class="form-floating">
                 <input type="text" class="form-control" name="username" id="floatingInput" placeholder="username">

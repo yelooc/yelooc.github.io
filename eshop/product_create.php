@@ -17,7 +17,7 @@
 
             <nav class="navbar-expand-lg py-2">
 
-                <div class="collapse navbar-collapse">
+                <div class="collapse navbar-collapse d-flex justify-content-between">
                     <ul class="navbar-nav mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link text-secondary" href="home.php">Home</a>
@@ -50,6 +50,11 @@
                             </ul>
                         </li>
                     </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary" href="session_logout.php">Log Out</a>
+                        </li>
+                    </ul>
                 </div>
             </nav>
         </div>
@@ -64,12 +69,19 @@
         <!-- html form to create product will be here -->
         <!-- PHP insert code will be here -->
         <?php
+ include 'config/database.php';
+        $query_category = "SELECT * FROM categorys ORDER BY id ASC";
+        $stmt_category = $con->prepare($query_category);
+        $stmt_category->execute();
+
+
+
         if ($_POST) {
             // include database connection
-            include 'config/database.php';
+           
             try {
                 // insert query
-                $query = "INSERT INTO products SET name=:name, description=:description, price=:price, 
+                $query = "INSERT INTO products SET name=:name, description=:description, category_id=:category_id, price=:price, 
                 promotionprice=:promotionprice,
                 manufacturedate=:manufacturedate, 
                 expireddate=:expireddate, 
@@ -78,6 +90,7 @@
                 $stmt = $con->prepare($query);
                 $name = $_POST['name'];
                 $description = $_POST['description'];
+                $category_id = $_POST['category_id'];
                 $price = $_POST['price'];
                 $promotionprice = $_POST['promotionprice'];
                 $manufacturedate = $_POST['manufacturedate'];
@@ -85,6 +98,7 @@
                 // bind the parameters
                 $stmt->bindParam(':name', $name);
                 $stmt->bindParam(':description', $description);
+                $stmt->bindParam(':category_id', $category_id);
                 $stmt->bindParam(':price', $price);
                 $stmt->bindParam(':promotionprice', $promotionprice);
                 $stmt->bindParam(':manufacturedate', $manufacturedate);
@@ -144,6 +158,10 @@
                         $flag = 1;
                     }
                 }
+                if (empty($category_id)){
+                    $message = "Category cannot be empty";
+                    $flag = 1;
+                }
                 if (!preg_match("/[a-zA-Z0-9]{1,}/", $description)) {
                     $message = "Description cannot be empty";
                     $flag = 1;
@@ -197,6 +215,20 @@
                 <tr>
                     <td>Description</td>
                     <td><textarea name="description" rows="5" class="form-control"></textarea></td>
+                </tr>
+                <tr>
+                    <td>Category</td>
+                    <td>
+                        <select class="form-control form-select fs-6 rounded" name="category_id">
+                            <option value="">--Category--</option>
+                            <?php
+                            while ($row = $stmt_category->fetch(PDO::FETCH_ASSOC)) {
+                                extract($row);
+                                $selected_category = $row['id'] == $_POST['category_id'] ? 'selected' : '';
+                                echo "<option class='bg-white' value='{$id}'>$category_name</option>";
+                            }
+                            ?>
+                    </td>
                 </tr>
                 <tr>
                     <td>Price</td>
