@@ -71,6 +71,7 @@ include 'config/database.php';
                 echo "<td class='text-end'>{$price}</td>";
                 echo "<td class='text-end'>".intval($price) * intval($quantity)."</td>";
                 echo "</tr>";
+                $grand_total = $grand_total + (intval($price) * intval($quantity));
             }
     
             echo "<tr>";
@@ -79,7 +80,7 @@ include 'config/database.php';
             echo "<td></td>";
             echo "<td></td>";
             echo "<td class='fw-bold text-end'>Total</td>";
-            echo "<td class='fw-bold text-end'>".intval($price) * intval($quantity)."</td>";
+            echo "<td class='fw-bold text-end'>".$grand_total."</td>";
             echo "</tr>";
 
             echo "<tr>";

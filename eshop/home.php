@@ -19,6 +19,12 @@ $query_summary = "SELECT * FROM order_summary";
 $stmt_order = $con->prepare($query_summary);
 $stmt_order->execute();
 $rowcount_order = $stmt_order->rowCount();
+
+$query_lastorder = "SELECT * FROM order_summary ORDER BY order_id DESC LIMIT 1";
+$stmt_lastorder = $con->prepare($query_lastorder);
+$stmt_lastorder->execute();
+$lastorder = $stmt_lastorder->rowCount();
+
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -116,10 +122,23 @@ $rowcount_order = $stmt_order->rowCount();
             Products<br>
             <?php echo $rowcount_product ?>
         </div>
-        <div class="border border-primary text-center mt-5">
+        </div>
+        <div class="text-center row p-5">
+        <div class="border border-primary text-center col me-5">
             Orders<br>
             <?php echo $rowcount_order ?>
         </div>
+        <?php 
+        if ($lastorder > 0) {
+            $row = $stmt_lastorder->fetch(PDO::FETCH_ASSOC);
+        ?>
+        <div class="border border-primary text-center col">
+            Last Order<br>
+            <?php echo $row['order_id'] ?>
+        </div>
+        <?php 
+        }
+        ?>
     </div>
     
 
