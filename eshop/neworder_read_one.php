@@ -1,10 +1,8 @@
 <?php
 include 'session_login.php';
-// get passed parameter value, in this case, the record ID
-// isset() is a PHP function used to verify if a value is there or not
+
 $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 
-//include database connection
 include 'config/database.php';
 ?>
 
@@ -12,8 +10,7 @@ include 'config/database.php';
 <html>
 
 <head>
-    <title>Read one order</title>
-    <!-- Latest compiled and minified Bootstrap CSS -->
+    <title>Order Read One</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
@@ -22,7 +19,6 @@ include 'config/database.php';
 
 <body>
 
-    <!-- container -->
     <div class="container">
         <div class="page-header">
             <h1>Read Order Details</h1>
@@ -30,10 +26,9 @@ include 'config/database.php';
 
         <?php
 
-        // read current record's data
         try {
 
-            $query1 = "SELECT order_details.order_details_id, order_details.order_id, order_details.product_id, order_details.quantity, products.name FROM order_details INNER JOIN products ON order_details.product_id = products.product_id WHERE order_id = :order_id ";
+            $query1 = "SELECT order_details.order_details_id, order_details.order_id, order_details.product_id, order_details.quantity, products.name, products.price FROM order_details INNER JOIN products ON order_details.product_id = products.product_id WHERE order_id = :order_id ";
 
             $stmt = $con->prepare($query1);
             $stmt->bindParam(":order_id", $id);
@@ -45,7 +40,6 @@ include 'config/database.php';
             $stmt2 = $con->prepare($query2);
             $stmt2->execute();
             
-            // store retrieved row to a variable
             $row2 = $stmt2->fetch(PDO::FETCH_ASSOC);
             $cus_username = $row2['username'];
             $orderID = $row2['order_id'];
@@ -54,36 +48,50 @@ include 'config/database.php';
             echo "<br><h6>Username : $cus_username</h6>";
 
             echo "<table class='table table-hover table-responsive table-bordered'>"; //start table
-
-            //creating our table heading
             echo "<tr>";
             echo "<th>Order Details ID</th>";
             echo "<th>Product ID</th>";
             echo "<th>Product Name</th>";
-            echo "<th>Quantity</th>";
+            echo "<th class='text-end'>Quantity</th>";
+            echo "<th class='text-end'>Price</th>";
+            echo "<th class='text-end'>Sub Total</th>";
             echo "</tr>";
 
-            // retrieve our table contents
             if ($num > 0){
                 
-                // creating new table row per record
+                $grand_total = 0;
+
                 echo "<tr>";
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 extract($row);
                 echo "<td>$order_details_id</td>";
                 echo "<td>{$product_id}</td>";
                 echo "<td>{$name}</td>";
-                echo "<td>{$quantity}</td>";
+                echo "<td class='text-end'>{$quantity}</td>";
+                echo "<td class='text-end'>{$price}</td>";
+                echo "<td class='text-end'>".intval($price) * intval($quantity)."</td>";
                 echo "</tr>";
             }
+    
+            echo "<tr>";
+            echo "<td></td>";
+            echo "<td></td>";
+            echo "<td></td>";
+            echo "<td></td>";
+            echo "<td class='fw-bold text-end'>Total</td>";
+            echo "<td class='fw-bold text-end'>".intval($price) * intval($quantity)."</td>";
+            echo "</tr>";
 
             echo "<tr>";
             echo "<td></td>";
             echo "<td></td>";
             echo "<td></td>";
-            echo "<td> <a href='neworder_read.php' class='btn btn-danger'>Back to read Order</a></td>";
+            echo "<td></td>";
+            echo "<td></td>";
+            echo "<td class='text-center'><a href='neworder_update.php?id=$id' class='btn btn-primary me-3'>Edit</a>";
+            echo "<a href='neworder_read.php' class='btn btn-danger'>Back to read Order</a></td>";
             echo "</tr>";
-            // end table
+
             echo "</table>";
         }
     }
@@ -93,7 +101,7 @@ include 'config/database.php';
         }
         ?>
 
-    </div> <!-- end .container -->
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 

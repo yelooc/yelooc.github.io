@@ -47,6 +47,9 @@ include 'session_login.php';
                                 <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
                             </ul>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
+                        </li>
                     </ul>
                     <ul class="navbar-nav">
                         <li class="nav-item">
@@ -69,9 +72,6 @@ include 'session_login.php';
 
         include 'config/database.php';
 
-        // delete message prompt will be here
-
-        // select all data
         $query = "SELECT * FROM products ORDER BY product_id DESC";
         $stmt1 = $con->prepare($query);
         $stmt1->execute();
@@ -85,7 +85,6 @@ include 'session_login.php';
             array_push($product_arrID, $row['product_id']);
             array_push($product_arrName, $row['name']);
         }
-
 
         $query_customer = "SELECT * FROM customers ORDER BY username DESC";
         $stmt_customer = $con->prepare($query_customer);
@@ -135,12 +134,12 @@ include 'session_login.php';
             }
 
             try {
-                // insert query
+        
                 $query = "INSERT INTO order_summary SET customer_username=:customer_username, purchase_date=:purchase_date";
-                // prepare query for execution
+           
                 $stmt = $con->prepare($query);
                 $customer_username = $_POST['customer_username'];
-                // bind the parameters
+            
                 $stmt->bindParam(':customer_username', $customer_username);
                 $purchase_date = date('Y-m-d H:i:s'); // get the current date and time
                 $stmt->bindParam(':purchase_date', $purchase_date);
@@ -177,7 +176,7 @@ include 'session_login.php';
             }
         }
         ?>
-        <!-- html form here where the product information will be entered -->
+
         <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
 
             <table class='table table-hover table-responsive table-bordered'>
@@ -203,17 +202,6 @@ include 'session_login.php';
                 </tr>
 
                 <?php
-                // if ($_POST){ 
-                // $post_product = count($_POST['product']);
-
-                // }else{
-                //     $post_product = 1;
-                // }
-                //算有多少个product row当submit过后
-                // $post_product = $_POST ? count($_POST['product']) : 1;
-
-                //result save data after
-                // for ($product_row = 0; $product_row < $post_product; $product_row++) {
                 $array = array('');
                 if ($_POST) {
                     for ($y = 0; $y <= count($_POST['product']); $y++) {
@@ -244,7 +232,6 @@ include 'session_login.php';
                                 <?php
                                 $product_list = $_POST ? $_POST['product'] : ' ';
                                 for ($pcount = 0; $pcount < count($product_arrName); $pcount++) {
-                                    //第几个value ID是selected        //第几个product row
                                     $selected_product = $product_arrID[$pcount] == $product_list[$product_row] ? 'selected' : '';
                                     echo "<option value='" . $product_arrID[$pcount] . "'$selected_product>" . $product_arrName[$pcount] . "</option>";
                                 }
@@ -284,7 +271,7 @@ include 'session_login.php';
             </table>
         </form>
 
-    </div> <!-- end .container -->
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
     <script>
         document.addEventListener('click', function(event) {
@@ -302,7 +289,6 @@ include 'session_login.php';
             }
         }, false);
     </script>
-    <!-- confirm delete record will be here -->
 
 </body>
 

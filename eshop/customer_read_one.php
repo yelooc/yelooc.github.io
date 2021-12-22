@@ -1,28 +1,18 @@
 <?php
 include 'session_login.php';
-        // get passed parameter value, in this case, the record USERNAME
-        // isset() is a PHP function used to verify if a value is there or not
+
         $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
-       
         include 'config/database.php';
         
-        
-        // read current record's data
         try {
-            // prepare select query
+   
             $query = "SELECT username, email, firstname, lastname, gender, date_of_birth, registration_date_and_time,  account_status FROM customers WHERE username = :username";
             $stmt = $con->prepare($query);
         
-            // Bind the parameter
             $stmt->bindParam(":username", $id);
-            
-            // execute our query
             $stmt->execute();
-
-            // store retrieved row to a variable
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // values to fill up our form
             $username = $row['username'];
             $firstname = $row['firstname'];
             $lastname = $row['lastname'];
@@ -55,7 +45,6 @@ include 'session_login.php';
             <h1>Read Customer</h1>
         </div>
 
-        <!--we have our html table here where the record will be displayed-->
         <table class='table table-hover table-responsive table-bordered'>
         <tr>
                 <td>Username</td>
@@ -93,7 +82,7 @@ include 'session_login.php';
             </tr>
         </table>
 
-    </div> <!-- end .container -->
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 </body>
 

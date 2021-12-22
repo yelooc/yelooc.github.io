@@ -8,12 +8,11 @@ include 'session_login.php';
 <html>
 <head>
     <title>Eshop Customer Create to insert the data in database(PDO Method)</title>
-    <!-- Latest compiled and minified Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
 <body>
-    <!-- container -->
+
     <div class="container-fuild bg-dark">
         <div class="container">
 
@@ -51,6 +50,9 @@ include 'session_login.php';
                                 <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
                             </ul>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
+                        </li>
                     </ul>
                     <ul class="navbar-nav">
                         <li class="nav-item">
@@ -68,14 +70,12 @@ include 'session_login.php';
             <h1>Create Customer</h1>
         </div>
 
-        <!-- html form to create product will be here -->
-        <!-- PHP insert code will be here -->
         <?php
         if ($_POST) {
-            // include database connection
+
             include 'config/database.php';
             try {
-                // insert query
+     
                 $query = "INSERT INTO customers SET username=:username, 
                 email=:email, password=:password,
                 firstname=:firstname, 
@@ -83,7 +83,7 @@ include 'session_login.php';
                 gender=:gender, 
                 date_of_birth=:date_of_birth
                 ";
-                // prepare query for execution
+
                 $stmt = $con->prepare($query);
                 $username = $_POST['username'];
                 $email = $_POST['email'];
@@ -92,7 +92,8 @@ include 'session_login.php';
                 $firstname = $_POST['firstname'];
                 $lastname = $_POST['lastname'];  
                 $date_of_birth = $_POST['date_of_birth'];
-                // bind the parameters
+
+
                 $stmt->bindParam(':username', $username);
                 $stmt->bindParam(':email', $email);
                 $stmt->bindParam(':password', $password);
@@ -100,11 +101,10 @@ include 'session_login.php';
                 $stmt->bindParam(':lastname', $lastname);
                 $stmt->bindParam(':gender', $_POST['gender']);
                 $stmt->bindParam(':date_of_birth', $date_of_birth);
-                // Execute the query  
+
                 $flag = 0;
                 $message = "";
 
-                //empty validation
                 if (!preg_match("/[a-zA-Z0-9]{1,}/", $date_of_birth)) {
                     $message = "Date Of Bith cannot be empty";
                     $flag = 1;
@@ -215,7 +215,6 @@ include 'session_login.php';
 
         ?>
 
-        <!-- html form here where the product information will be entered -->
         <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
@@ -277,7 +276,6 @@ include 'session_login.php';
         </form>
 
     </div>
-    <!-- end .container -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 </body>
 

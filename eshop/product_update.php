@@ -1,33 +1,19 @@
 <?php
 include 'session_login.php';
-// get passed parameter value, in this case, the record ID
-// isset() is a PHP function used to verify if a value is there or not
+
 $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 
 include 'config/database.php';
 
-
-// read current record's data
 try {
-    // prepare select query
+
     $query = "SELECT * FROM products WHERE product_id = :id ";
     $stmt = $con->prepare($query);
-
-    // Bind the parameter
     $stmt->bindParam(":id", $id);
-
-    // execute our query
     $stmt->execute();
-
-    // store retrieved row to a variable
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // values to fill up our form
     extract($row);
-    // $name = $row['name'];
-    // $description = $row['description'];
-    // $price = $row['price'];
-    // shorter way to do that is extract($row)
+
 }
 
 // show error
@@ -40,7 +26,7 @@ catch (PDOException $exception) {
 <html>
 
 <head>
-    <title>PDO - Read One Record - PHP CRUD Tutorial</title>
+    <title>PDO - Product Update - PHP CRUD Tutorial</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
@@ -51,25 +37,23 @@ catch (PDOException $exception) {
         </div>
 
         <?php
-// check if form was submitted
+
 if ($_POST) {
     try {
-        // write update query
-        // in this case, it seemed like we have so many fields to pass and
-        // it is better to label them and not use question marks
+
         $query = "UPDATE products
                   SET name=:name, description=:description,
    price=:price, promotionprice=:promotionprice, manufacturedate=:manufacturedate, expireddate=:expireddate WHERE product_id = :product_id";
-        // prepare query for excecution
+
         $stmt = $con->prepare($query);
-        // posted values
+
         $name = htmlspecialchars(strip_tags($_POST['name']));
         $description = htmlspecialchars(strip_tags($_POST['description']));
         $price = htmlspecialchars(strip_tags($_POST['price']));
         $promotionprice = htmlspecialchars(strip_tags($_POST['promotionprice']));
         $manufacturedate = htmlspecialchars(strip_tags($_POST['manufacturedate']));
         $expireddate = htmlspecialchars(strip_tags($_POST['expireddate']));
-        // bind the parameters
+
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':description', $description);
         $stmt->bindParam(':price', $price);
@@ -77,7 +61,7 @@ if ($_POST) {
         $stmt->bindParam(':manufacturedate', $manufacturedate);
         $stmt->bindParam(':expireddate', $expireddate);
         $stmt->bindParam(':product_id', $id);
-        // Execute the query
+
         $flag = 0;
         $message = "";
 
@@ -172,7 +156,6 @@ if ($_POST) {
 } 
 ?>
 
-        <!--we have our html table here where the record will be displayed-->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
@@ -209,7 +192,7 @@ if ($_POST) {
             </table>
         </form>
 
-    </div> <!-- end .container -->
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 </body>
 

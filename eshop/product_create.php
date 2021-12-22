@@ -1,6 +1,4 @@
-<!--ID : 2030346 -->
-<!--Name : NG WING Chun -->
-<!--Topic : Eshop Customer Create to insert the data in database(PDO Method)-->
+
 <?php 
 include 'session_login.php';
 ?>
@@ -9,12 +7,11 @@ include 'session_login.php';
 
 <head>
     <title>Eshop Customer Create to insert the data in database(PDO Method)</title>
-    <!-- Latest compiled and minified Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
 <body>
-    <!-- container -->
+
     <div class="container-fuild bg-dark">
         <div class="container">
 
@@ -52,6 +49,9 @@ include 'session_login.php';
                                 <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
                             </ul>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
+                        </li>
                     </ul>
                     <ul class="navbar-nav">
                         <li class="nav-item">
@@ -69,27 +69,22 @@ include 'session_login.php';
             <h1>Create Product</h1>
         </div>
 
-        <!-- html form to create product will be here -->
-        <!-- PHP insert code will be here -->
         <?php
  include 'config/database.php';
         $query_category = "SELECT * FROM categorys ORDER BY id ASC";
         $stmt_category = $con->prepare($query_category);
         $stmt_category->execute();
 
-
-
         if ($_POST) {
-            // include database connection
            
             try {
-                // insert query
+               
                 $query = "INSERT INTO products SET name=:name, description=:description, category_id=:category_id, price=:price, 
                 promotionprice=:promotionprice,
                 manufacturedate=:manufacturedate, 
                 expireddate=:expireddate, 
                 created=:created";
-                // prepare query for execution
+              
                 $stmt = $con->prepare($query);
                 $name = $_POST['name'];
                 $description = $_POST['description'];
@@ -98,7 +93,7 @@ include 'session_login.php';
                 $promotionprice = $_POST['promotionprice'];
                 $manufacturedate = $_POST['manufacturedate'];
                 $expireddate = $_POST['expireddate'];
-                // bind the parameters
+               
                 $stmt->bindParam(':name', $name);
                 $stmt->bindParam(':description', $description);
                 $stmt->bindParam(':category_id', $category_id);
@@ -108,7 +103,7 @@ include 'session_login.php';
                 $stmt->bindParam(':expireddate', $expireddate);
                 $created = date('Y-m-d H:i:s'); // get the current date and time
                 $stmt->bindParam(':created', $created);
-                // Execute the query
+            
                 $flag = 0;
                 $message = "";
 
@@ -188,8 +183,6 @@ include 'session_login.php';
                     }
                 }
 
-
-
                 if ($flag == 0) {
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
@@ -208,7 +201,6 @@ include 'session_login.php';
 
         ?>
 
-        <!-- html form here where the product information will be entered -->
         <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
@@ -258,9 +250,8 @@ include 'session_login.php';
                 </tr>
             </table>
         </form>
-
     </div>
-    <!-- end .container -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 </body>
 
