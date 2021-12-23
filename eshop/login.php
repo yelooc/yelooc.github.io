@@ -99,14 +99,10 @@
                 <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="Password">
                 <label>Password</label>
             </div>
-            <div class="form-check-center mb-3 mt-2">
-                <input class="form-check-input" type="checkbox" id="Checkbox">
-                <label class="form-check-label">
-                    Remember me
-                </label>
-            </div>
-            <button type="submit" name="submit" class="btn btn-primary col col-12 mb-5">Sign in</button>
-            <p class="text-secondary">©2017-2021</p>
+            <br><br>
+            <button type="submit" name="submit" class="btn btn-primary col col-12 mb-1">Sign in</button>
+            If Do You No Account?<a href="customer_create.php">Sign Up</a>
+            <p class="text-secondary mt-3">©2017-2021</p>
         </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>

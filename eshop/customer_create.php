@@ -1,9 +1,6 @@
 <!--ID : 2030346 -->
 <!--Name : NG WING Chun -->
 <!--Topic : Eshop Customer Create to insert the data in database(PDO Method)-->
-<?php
-include 'session_login.php';
-?>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -219,27 +216,27 @@ include 'session_login.php';
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Username</td>
-                    <td><input type='text' name='username' class='form-control' /></td>
+                    <td><input type='text' name='username' class='form-control' value="<?php if ($_POST){echo $_POST['username'];} ?>"/></td>
                 </tr>
                 <tr>
                     <td>Email</td>
-                    <td><input type='email' name='email' class='form-control' /></td>
+                    <td><input type='email' name='email' class='form-control' value="<?php if ($_POST){echo $_POST['email'];} ?>"/></td>
                 </tr>
                 <tr>
                     <td>Password</td>
-                    <td><input type='password' name='password' class='form-control' /></td>
+                    <td><input type='password' name='password' class='form-control' value="<?php if ($_POST){echo $_POST['password'];} ?>"/></td>
                 </tr>
                 <tr>
                     <td>Comfirm Password</td>
-                    <td><input type='password' name='comfirm_password' class='form-control' /></td>
+                    <td><input type='password' name='comfirm_password' class='form-control' value="<?php if ($_POST){echo $_POST['comfirm_password'];} ?>"/></td>
                 </tr>
                 <tr>
                     <td>First name</td>
-                    <td><input type='text' name='firstname' class='form-control' /></td>
+                    <td><input type='text' name='firstname' class='form-control' value="<?php if ($_POST){echo $_POST['firstname'];} ?>"/></td>
                 </tr>
                 <tr>
                     <td>Last name</td>
-                    <td><input type='text' name='lastname' class='form-control' /></td>
+                    <td><input type='text' name='lastname' class='form-control' value="<?php if ($_POST){echo $_POST['lastname'];} ?>"/></td>
                 </tr>
                 <tr>
                     <td>Gender</td>
@@ -263,7 +260,7 @@ include 'session_login.php';
                 </tr>
                 <tr>
                     <td>Date of birth</td>
-                    <td><input type='date' name='date_of_birth' class='form-control' /></td>
+                    <td><input type='date' name='date_of_birth' class='form-control' value="<?php if ($_POST){echo $_POST['date_of_birth'];} ?>"/></td>
                 </tr>
                 <tr>
                     <td></td>

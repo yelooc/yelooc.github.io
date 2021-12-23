@@ -1,5 +1,4 @@
-
-<?php 
+<?php
 include 'session_login.php';
 ?>
 <!DOCTYPE HTML>
@@ -70,21 +69,21 @@ include 'session_login.php';
         </div>
 
         <?php
- include 'config/database.php';
+        include 'config/database.php';
         $query_category = "SELECT * FROM categorys ORDER BY id ASC";
         $stmt_category = $con->prepare($query_category);
         $stmt_category->execute();
 
         if ($_POST) {
-           
+
             try {
-               
+
                 $query = "INSERT INTO products SET name=:name, description=:description, category_id=:category_id, price=:price, 
                 promotionprice=:promotionprice,
                 manufacturedate=:manufacturedate, 
                 expireddate=:expireddate, 
                 created=:created";
-              
+
                 $stmt = $con->prepare($query);
                 $name = $_POST['name'];
                 $description = $_POST['description'];
@@ -93,7 +92,7 @@ include 'session_login.php';
                 $promotionprice = $_POST['promotionprice'];
                 $manufacturedate = $_POST['manufacturedate'];
                 $expireddate = $_POST['expireddate'];
-               
+
                 $stmt->bindParam(':name', $name);
                 $stmt->bindParam(':description', $description);
                 $stmt->bindParam(':category_id', $category_id);
@@ -103,9 +102,28 @@ include 'session_login.php';
                 $stmt->bindParam(':expireddate', $expireddate);
                 $created = date('Y-m-d H:i:s'); // get the current date and time
                 $stmt->bindParam(':created', $created);
-            
+
                 $flag = 0;
                 $message = "";
+
+                //Date validation
+                if ($expireddate . substr(0, 4) < $manufacturedate . substr(0, 4)) {
+                    $message = "Manufacture date should be earlier than Expired date";
+                    $flag = 1;
+                    if ($expireddate . substr(5, 7) <  $manufacturedate . substr(5, 7)) {
+                        $message = "Manufacture date should be earlier than Expired date";
+                        $flag = 1;
+                        if ($expireddate . substr(8, 10) <  $manufacturedate . substr(8, 10)) {
+                            $message = "Manufacture date should be earlier than Expired date";
+                            $flag = 1;
+                        }
+                    }
+                }
+
+                if ($expireddate . substr(0, 10) == $manufacturedate . substr(0, 10)) {
+                    $message = "Manufacture date cannot same with Expired date";
+                    $flag = 1;
+                }
 
                 //empty validation
                 if (!preg_match("/[a-zA-Z0-9]{1,}/", $expireddate)) {
@@ -129,6 +147,10 @@ include 'session_login.php';
                         $message = "Promotion Price cannot more than Regular Price";
                         $flag = 1;
                     }
+                    if ($promotionprice == $price) {
+                        $message = "Promotion Price cannot same with Regular Price";
+                        $flag = 1;
+                    }
                     if (!preg_match("/[0-9]/", $promotionprice)) {
                         $message = "Promotion Price should be numbers only";
                         $flag = 1;
@@ -138,13 +160,14 @@ include 'session_login.php';
                         $flag = 1;
                     }
                 }
+
                 if (!preg_match("/[0-9]{1,}/", $price)) {
                     $message = "Price cannot be empty";
                     $flag = 1;
                 } else {
                     //price validation
-                    if (preg_match("/-/", $price) || $price < 1000) {
-                        $message = "Price should not negative and less than 1000";
+                    if (preg_match("/-/", $price)) {
+                        $message = "Price should not negative";
                         $flag = 1;
                     }
                     if (!preg_match("/[0-9]/", $price) || preg_match("/[a-zA-Z]/", $price)) {
@@ -156,7 +179,11 @@ include 'session_login.php';
                         $flag = 1;
                     }
                 }
-                if (empty($category_id)){
+                if (preg_match("/[a-zA-Z]{1,}/", $price)) {
+                    $message = "Price should be numbers only";
+                    $flag = 1;
+                } 
+                if (empty($category_id)) {
                     $message = "Category cannot be empty";
                     $flag = 1;
                 }
@@ -169,19 +196,6 @@ include 'session_login.php';
                     $flag = 1;
                 }
 
-                //Date validation
-                if ($expireddate . substr(0, 4) < $manufacturedate . substr(0, 4)) {
-                    $message = "Manufacture date should be earlier than Expired date";
-                    $flag = 1;
-                    if ($expireddate . substr(5, 7) <  $manufacturedate . substr(5, 7)) {
-                        $message = "Manufacture date should be earlier than Expired date";
-                        $flag = 1;
-                        if ($expireddate . substr(8, 10) <  $manufacturedate . substr(8, 10)) {
-                            $message = "Manufacture date should be earlier than Expired date";
-                            $flag = 1;
-                        }
-                    }
-                }
 
                 if ($flag == 0) {
                     if ($stmt->execute()) {
@@ -205,11 +219,11 @@ include 'session_login.php';
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Name</td>
-                    <td><input type='text' name='name' class='form-control' /></td>
+                    <td><input type='text' name='name' class='form-control' value="<?php if ($_POST){echo $_POST['name'];} ?>"/></td>
                 </tr>
                 <tr>
                     <td>Description</td>
-                    <td><textarea name="description" rows="5" class="form-control"></textarea></td>
+                    <td><textarea name="description" rows="5" class="form-control"><?php if ($_POST){echo $_POST['description'];} ?></textarea></td>
                 </tr>
                 <tr>
                     <td>Category</td>
@@ -227,19 +241,19 @@ include 'session_login.php';
                 </tr>
                 <tr>
                     <td>Price</td>
-                    <td><input type='text' name='price' class='form-control' /></td>
+                    <td><input type='text' name='price' class='form-control' value="<?php if ($_POST){echo $_POST['price'];} ?>"/></td>
                 </tr>
                 <tr>
                     <td>Promotion Price</td>
-                    <td><input type='text' name='promotionprice' class='form-control' /></td>
+                    <td><input type='text' name='promotionprice' class='form-control' value="<?php if ($_POST){echo $_POST['promotionprice'];} ?>"/></td>
                 </tr>
                 <tr>
                     <td>Manufacture Date</td>
-                    <td><input type='date' name='manufacturedate' class='form-control' /></td>
+                    <td><input type='date' name='manufacturedate' class='form-control' value="<?php if ($_POST){echo $_POST['manufacturedate'];} ?>"/></td>
                 </tr>
                 <tr>
                     <td>Expired Date</td>
-                    <td><input type='date' name='expireddate' class='form-control' /></td>
+                    <td><input type='date' name='expireddate' class='form-control' value="<?php if ($_POST){echo $_POST['expireddate'];} ?>"/></td>
                 </tr>
                 <tr>
                     <td></td>

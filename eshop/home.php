@@ -105,7 +105,7 @@ $lastorder = $stmt_lastorder->rowCount();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         
 
-        if ($row['gender'] == 'Male') {
+        if ($row['gender'] == 'male') {
             echo "<p class='text-center'>Mr. ".$row['firstname']." ".$row['lastname']."</p>";
         } else {
            echo "<p class='text-center'>Ms. ".$row['firstname']." ".$row['lastname']."</p>";

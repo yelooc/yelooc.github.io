@@ -19,12 +19,13 @@ $num = $stmt->rowCount();
 $table = $stmt->fetchAll();
 
 foreach ($table as $row) {
+    $price = !preg_match("/[.]/", $row['price']) ? $row['price'].".00" : $row['price'] ;
     $tableContent = $tableContent . "<tr>" .
         "<td>" . $row['product_id'] . "</td>"
         . "<td>" . $row['name'] . "</td>"
         . "<td>" . $row['description'] . "</td>"
         . "<td>" . $row['category_name'] . "</td>"
-        . "<td class='text-end'>" . $row['price'] . "</td>"
+        . "<td class='text-end'>" . $price . "</td>"
         . "<td class='d-flex justify-content-between'>"
         . "<a href='product_read_one.php?id={$row['product_id']}' class='btn btn-info'>Read</a>"
         . "<a href='product_update.php?id={$row['product_id']}' class='btn btn-primary'>Edit</a>"
@@ -53,13 +54,14 @@ if (isset($_POST['filter'])) {
     $table = $selectstmt->fetchAll();
 
     foreach ($table as $row) {
+        $price = !preg_match("/[.]/", $row['price']) ? $row['price'].".00" : $row['price'] ;
         $category_header = $category_option == "all_category" ? "<td>" . $row['category_name'] . "</td>" : "";
         $tableContent = $tableContent . "<tr>" .
             "<td>" . $row['product_id'] . "</td>"
             . "<td>" . $row['name'] . "</td>"
             . "<td>" . $row['description'] . "</td>"
             . $category_header
-            . "<td class='text-end'>" . $row['price'] . "</td>"
+            . "<td class='text-end'>" . $price . "</td>"
             . "<td class='d-flex justify-content-between'>"
             . "<a href='product_read_one.php?id={$row['product_id']}' class='btn btn-info'>Read</a>"
             . "<a href='product_update.php?id={$row['product_id']}' class='btn btn-primary'>Edit</a>"
@@ -198,12 +200,13 @@ if (isset($_POST['filter'])) {
                 if ($query->fetch(PDO::FETCH_ASSOC)) {
                     $query->execute();
                     while ($row = $query->fetch()) {
+                        $price = !preg_match("/[.]/", $row['price']) ? $row['price'].".00" : $row['price'] ;
                         echo "</tr>";
                         echo "<td>" . $row['product_id'] . "</td>";
                         echo "<td>" . $row['name'] . "</td>";
                         echo "<td>" . $row['description'] . "</td>";
                         echo "<td>" . $row['category_name'] . "</td>";
-                        echo "<td class='text-end'>" . $row['price'] . "</td>";
+                        echo "<td class='text-end'>" . $price . "</td>";
                         echo "<td class='d-flex justify-content-between'>";
                         echo "<a href='product_read_one.php?id={$row['product_id']}' class='btn btn-info'>Read</a>";
                         echo "<a href='product_update.php?id={$row['product_id']}' class='btn btn-primary'>Edit</a>";
