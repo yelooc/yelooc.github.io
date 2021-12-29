@@ -1,8 +1,13 @@
-<?php 
+<?php
 include 'session_login.php';
+$id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
+include 'config/database.php';
+
+include 'nav.php';
 ?>
 <!DOCTYPE HTML>
 <html>
+
 <head>
     <title>PDO - Create a Record - PHP CRUD Tutorial</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
@@ -10,66 +15,12 @@ include 'session_login.php';
 
 <body>
 
-    <div class="container-fuild bg-dark">
-        <div class="container">
-
-            <nav class="navbar-expand-lg py-2">
-
-                <div class="collapse navbar-collapse d-flex justify-content-between">
-                    <ul class="navbar-nav mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="home.php">Home</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Product
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="product_create.php">Create Product</a></li>
-                                <li><a class="dropdown-item" href="product_read.php">Product Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Customer
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="customer_create.php">Create Customer</a></li>
-                                <li><a class="dropdown-item" href="customer_read.php">Customer Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle active text-white" href="#" role="button" data-bs-toggle="dropdown">
-                                Order
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item bg-secondary" href="#">Create New Order</a></li>
-                                <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="session_logout.php">Log Out</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </div>
-
     <div class="container">
-
         <div class="page-header row">
             <h1 class="col">Create New Order</h1>
         </div>
 
         <?php
-
-
         include 'config/database.php';
 
         $query = "SELECT * FROM products ORDER BY product_id DESC";
@@ -113,7 +64,6 @@ include 'session_login.php';
             if (count($_POST['product']) !== count(array_unique($_POST['product']))) {
                 $flag = 1;
                 $message = 'Duplicate product is not allowed.';
-    
             }
 
             if ($callselect_at_least_flag < 1) {
@@ -134,12 +84,12 @@ include 'session_login.php';
             }
 
             try {
-        
+
                 $query = "INSERT INTO order_summary SET customer_username=:customer_username, purchase_date=:purchase_date";
-           
+
                 $stmt = $con->prepare($query);
                 $customer_username = $_POST['customer_username'];
-            
+
                 $stmt->bindParam(':customer_username', $customer_username);
                 $purchase_date = date('Y-m-d H:i:s'); // get the current date and time
                 $stmt->bindParam(':purchase_date', $purchase_date);
@@ -159,7 +109,9 @@ include 'session_login.php';
                                 $stmt->execute();
                             }
                         }
-                        echo "<div class='alert alert-success'>Record was saved. Last inserted ID is : $last_id</div>";
+                        // echo "<div class='alert alert-success'>Record was saved. Last inserted ID is : $last_id</div>";
+                        
+                        header("Location:neworder_success_create_message.php?id={$id}");
                     } else {
 
                         $message = "Unable to save record";
@@ -177,12 +129,12 @@ include 'session_login.php';
         }
         ?>
 
-        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
+        <form action="<?php echo $_SERVER["PHP_SELF"] . "?id={$id}" ?>" method="POST">
 
-            <table class='table table-hover table-responsive table-bordered'>
+            <table class='table table-hover table-responsive table-bordered m-0'>
 
                 <tr>
-                    <td>Customer's Username</td>
+                    <td class="col-5">Customer's Username</td>
                     <td>
                         <div class="input-group mb-3">
                             <select class="form-select form-select fs-6 rounded" name="customer_username">
@@ -195,38 +147,38 @@ include 'session_login.php';
                                 }
                                 ?>
                             </select>
-
                         </div>
-
                     </td>
                 </tr>
+            </table>
 
-                <?php
-                $array = array('');
-                if ($_POST) {
-                    for ($y = 0; $y <= count($_POST['product']); $y++) {
-                        if (empty($_POST['product'][$y]) && empty($_POST['quantity'][$y])) {
+            <?php
+            $array = array('');
+            if ($_POST) {
+                for ($y = 0; $y <= count($_POST['product']); $y++) {
+                    if (empty($_POST['product'][$y]) && empty($_POST['quantity'][$y])) {
 
-                            unset($_POST['product'][$y]);
-                            unset($_POST['quantity'][$y]);
-                        }
-                        if (count($_POST['product']) != count(array_unique($_POST['product']))) {
-                    
-                            unset($_POST['product'][$y]);
-                            unset($_POST['quantity'][$y]);
-                        }
+                        unset($_POST['product'][$y]);
+                        unset($_POST['quantity'][$y]);
                     }
-                    if (count($_POST['product']) == 0) {
-                        $array = array('');
-                    } else {
-                        $array = $_POST['product'];
+                    if (count($_POST['product']) != count(array_unique($_POST['product']))) {
+
+                        unset($_POST['product'][$y]);
+                        unset($_POST['quantity'][$y]);
                     }
                 }
-                foreach ($array as $product_row => $product_ID) {
-                ?>
+                if (count($_POST['product']) == 0) {
+                    $array = array('');
+                } else {
+                    $array = $_POST['product'];
+                }
+            }
+            foreach ($array as $product_row => $product_ID) {
+            ?>
+                <table class='table table-hover table-responsive table-bordered' id='order_table'>
                     <tr class="productRow">
-                        <td>Product</td>
-                        <td>
+                        <td class='col-5'>Product</td>
+                        <td class='col-3'>
                             <select class="form-control form-select fs-6 rounded" name="product[]">
                                 <option value="">Product List</option>
                                 <?php
@@ -237,6 +189,7 @@ include 'session_login.php';
                                 }
                                 ?>
                             </select>
+
                         <td>
                             <select class="form-control form-select" name="quantity[]">
                                 <option value="">Please Select Your Quantity</option>
@@ -248,27 +201,32 @@ include 'session_login.php';
                                 ?>
                         </td>
                         </td>
+                        <td class="d-flex justify-content-center">
+                            <button type="button" class="btn btn-danger" onclick="deleteMe(this)">X</button>
+                        </td>
                     </tr>
-                <?php
-                }
-                ?>
-                <tr>
-                    <td>
-                        <button type="button" class="add_one btn btn-primary">Add More Product</button>
-                        <button type="button" class="delete_one btn btn-danger">Delete Last Product</button>
-                    </td>
-                    <td>
-                        <input type='submit' value='Save' class='btn btn-primary' />
-                        <a href='neworder_read.php' class='btn btn-danger'>Back to read order</a>
-                    </td>
-                </tr>
-                <div class="d-flex justify-content-center flex-column flex-lg-row">
-                    <div class="d-flex justify-content-center">
+                </table>
 
-
-                    </div>
+            <?php
+            }
+            ?>
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="add_one btn btn-primary">Add More Product</button>
+                    <button type="button" class="delete_one btn btn-danger">Delete Last Product</button>
                 </div>
-            </table>
+                <div class="col text-end">
+                    <input type='submit' value='Save' class='btn btn-primary' />
+                    <?php
+                    echo "<a href='neworder_read.php?id={$id}' class='btn btn-danger'>Back to read order</a>";
+                    ?>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center flex-column flex-lg-row">
+                <div class="d-flex justify-content-center">
+                </div>
+            </div>
+
         </form>
 
     </div>
@@ -288,6 +246,18 @@ include 'session_login.php';
                 }
             }
         }, false);
+
+        function deleteMe(row) {
+            var table = document.getElementById('order_table')
+            var allrows = table.getElementsByTagName('tr');
+            if (allrows.length == 1) {
+                alert("You are not allowed to delete.");
+            } else {
+                if (confirm("Confirm to delete?")) {
+                    row.parentNode.parentNode.remove();
+                }
+            }
+        }
     </script>
 
 </body>

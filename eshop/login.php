@@ -47,15 +47,17 @@
             $stmt->bindParam(1, $username);
             $stmt->execute();
             $num = $stmt->rowCount();
-
+            
             if ($num > 0) {
-
+                
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
+                extract($row);
+             
                 if ($_POST['password'] == $row['password']) {
                     if ($row['account_status'] == 'active') {
                         $_SESSION["correct_username"] = $_POST['username'];
-                        header("Location:home.php");
+                        
+                        header("Location:home.php?id={$username}");
                     } else {
                         $flag = 1;
                         $message = 'Your Account is suspended';
@@ -100,9 +102,8 @@
                 <label>Password</label>
             </div>
             <br><br>
-            <button type="submit" name="submit" class="btn btn-primary col col-12 mb-1">Sign in</button>
-            If Do You No Account?<a href="customer_create.php">Sign Up</a>
-            <p class="text-secondary mt-3">©2017-2021</p>
+            <button type="submit" name="submit" class="btn btn-primary col-12">Sign in</button>
+            No Account? <a href="sign_up.php">Sign Up</a>
         </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>

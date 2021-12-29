@@ -1,5 +1,10 @@
 <?php
 include 'session_login.php';
+
+$id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
+include 'config/database.php';
+
+include 'nav.php';
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -11,57 +16,6 @@ include 'session_login.php';
 
 <body>
 
-    <div class="container-fuild bg-dark">
-        <div class="container">
-
-            <nav class="navbar-expand-lg py-2">
-
-                <div class="collapse navbar-collapse d-flex justify-content-between">
-                    <ul class="navbar-nav mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="home.php">Home</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle active text-white" href="#" role="button" data-bs-toggle="dropdown">
-                                Product
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item bg-secondary" href="#">Create Product</a></li>
-                                <li><a class="dropdown-item" href="product_read.php">Product Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Customer
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="customer_create.php">Create Customer</a></li>
-                                <li><a class="dropdown-item" href="customer_read.php">Customer Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Order
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="neworder_create.php">Create New Order</a></li>
-                                <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="session_logout.php">Log Out</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </div>
-
     <div class="container">
 
         <div class="page-header">
@@ -69,17 +23,39 @@ include 'session_login.php';
         </div>
 
         <?php
-        include 'config/database.php';
+
         $query_category = "SELECT * FROM categorys ORDER BY id ASC";
         $stmt_category = $con->prepare($query_category);
         $stmt_category->execute();
 
+        $query_product = 'SELECT * FROM products';
+        $stmt_product = $con->prepare($query_product);
+        $stmt_product->execute();
+        $row = $stmt_product->fetch(PDO::FETCH_ASSOC);
+        $num = $stmt_product->rowCount();
+
         if ($_POST) {
+
+            $target_dir = "uploads/";
+            // if (!empty($target_file)) {
+            //     $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+            //     $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+            // } else {
+            //     $target_file = "uploads/noimg_product.png";
+            //     $check = getimagesize("uploads/noimg_product.png");
+            // }
+            $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+                $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+            $isUploadOK = 1;
+            $isUploadOKs = true;
+            $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
 
             try {
 
                 $query = "INSERT INTO products SET name=:name, description=:description, category_id=:category_id, price=:price, 
                 promotionprice=:promotionprice,
+                path_img=:path_img,
                 manufacturedate=:manufacturedate, 
                 expireddate=:expireddate, 
                 created=:created";
@@ -90,6 +66,7 @@ include 'session_login.php';
                 $category_id = $_POST['category_id'];
                 $price = $_POST['price'];
                 $promotionprice = $_POST['promotionprice'];
+                $path_img = $target_file;
                 $manufacturedate = $_POST['manufacturedate'];
                 $expireddate = $_POST['expireddate'];
 
@@ -98,6 +75,7 @@ include 'session_login.php';
                 $stmt->bindParam(':category_id', $category_id);
                 $stmt->bindParam(':price', $price);
                 $stmt->bindParam(':promotionprice', $promotionprice);
+                $stmt->bindParam(':path_img', $path_img);
                 $stmt->bindParam(':manufacturedate', $manufacturedate);
                 $stmt->bindParam(':expireddate', $expireddate);
                 $created = date('Y-m-d H:i:s'); // get the current date and time
@@ -182,7 +160,7 @@ include 'session_login.php';
                 if (preg_match("/[a-zA-Z]{1,}/", $price)) {
                     $message = "Price should be numbers only";
                     $flag = 1;
-                } 
+                }
                 if (empty($category_id)) {
                     $message = "Category cannot be empty";
                     $flag = 1;
@@ -196,10 +174,37 @@ include 'session_login.php';
                     $flag = 1;
                 }
 
+                if ($check !== false) {
+                    $isUploadOK = 1;
+                } else {
+                    $message = "File is not an image.";
+                    $isUploadOK = 0;
+                }
 
-                if ($flag == 0) {
-                    if ($stmt->execute()) {
-                        echo "<div class='alert alert-success'>Record was saved.</div>";
+                // if ($num > 0) {
+                //     while ($row = $stmt_product->fetch(PDO::FETCH_ASSOC)) {
+                //         if ($row['path_img'] == $target_file) {
+                //             $message = "Sorry, your Image's name is exit already.";
+                //             $isUploadOKs = false;
+                //         }
+                //     }
+                // }
+
+                // Check file size
+                if ($_FILES["fileToUpload"]["size"] > 5000000) {
+                    $message = " Sorry, your file is too large.";
+                    $isUploadOKs = false;
+                }
+                // Allow certain file formats
+                if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+                    $message = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+                    $isUploadOKs = false;
+                }
+
+                if ($flag == 0 && $isUploadOKs == true && $isUploadOK == 1) {
+                    if ($stmt->execute() && move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+                        // echo "<script>alert('Successfully');</script>"; 
+                        header("Location:product_success_create_message.php?id={$id}");
                     }
                 } else {
                     echo "<div class='alert alert-danger'>";
@@ -215,15 +220,19 @@ include 'session_login.php';
 
         ?>
 
-        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
+        <form action="<?php echo $_SERVER["PHP_SELF"] . "?id={$id}" ?>" method="POST" enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Name</td>
-                    <td><input type='text' name='name' class='form-control' value="<?php if ($_POST){echo $_POST['name'];} ?>"/></td>
+                    <td><input type='text' name='name' class='form-control' value="<?php if ($_POST) {
+                                                                                        echo $_POST['name'];
+                                                                                    } ?>" /></td>
                 </tr>
                 <tr>
                     <td>Description</td>
-                    <td><textarea name="description" rows="5" class="form-control"><?php if ($_POST){echo $_POST['description'];} ?></textarea></td>
+                    <td><textarea name="description" rows="5" class="form-control"><?php if ($_POST) {
+                                                                                        echo $_POST['description'];
+                                                                                    } ?></textarea></td>
                 </tr>
                 <tr>
                     <td>Category</td>
@@ -241,25 +250,56 @@ include 'session_login.php';
                 </tr>
                 <tr>
                     <td>Price</td>
-                    <td><input type='text' name='price' class='form-control' value="<?php if ($_POST){echo $_POST['price'];} ?>"/></td>
+                    <td><input type='text' name='price' class='form-control' value="<?php if ($_POST) {
+                                                                                        echo $_POST['price'];
+                                                                                    } ?>" /></td>
                 </tr>
                 <tr>
                     <td>Promotion Price</td>
-                    <td><input type='text' name='promotionprice' class='form-control' value="<?php if ($_POST){echo $_POST['promotionprice'];} ?>"/></td>
+                    <td><input type='text' name='promotionprice' class='form-control' value="<?php if ($_POST) {
+                                                                                                    echo $_POST['promotionprice'];
+                                                                                                } ?>" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Product Image</p>
+                    </td>
+                    <td><input type="file" name="fileToUpload" class="form-control" id="fileToUpload"></td>
                 </tr>
                 <tr>
                     <td>Manufacture Date</td>
-                    <td><input type='date' name='manufacturedate' class='form-control' value="<?php if ($_POST){echo $_POST['manufacturedate'];} ?>"/></td>
+                    <td><input type='date' name='manufacturedate' class='form-control' value="<?php if ($_POST) {
+                                                                                                    echo $_POST['manufacturedate'];
+                                                                                                } ?>" /></td>
                 </tr>
                 <tr>
                     <td>Expired Date</td>
-                    <td><input type='date' name='expireddate' class='form-control' value="<?php if ($_POST){echo $_POST['expireddate'];} ?>"/></td>
+                    <td><input type='date' name='expireddate' class='form-control' value="<?php if ($_POST) {
+                                                                                                echo $_POST['expireddate'];
+                                                                                            } ?>" /></td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
                         <input type='submit' value='Save' class='btn btn-primary' />
-                        <a href='product_read.php' class='btn btn-danger'>Back to read products</a>
+                        <?php
+                        if (filter_var($_SESSION['correct_username'], FILTER_VALIDATE_EMAIL)) {
+                            $query = 'SELECT * from customers WHERE email= ?';
+                        } else {
+                            $query = 'SELECT * FROM customers WHERE username=?';
+                        }
+
+                        $stmt = $con->prepare($query);
+                        $stmt->bindParam(1, $_SESSION['correct_username']);
+                        $stmt->execute();
+                        $numCustomer = $stmt->rowCount();
+
+                        if ($numCustomer > 0) {
+                            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                            extract($row);
+                            echo "<a href='product_read.php?id={$username}' class='btn btn-danger'>Back to read products</a>";
+                        }
+                        ?>
                     </td>
                 </tr>
             </table>

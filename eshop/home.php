@@ -3,7 +3,10 @@
 <!--Topic : Eshop Home-->
 <?php
 include 'session_login.php';
+
+$id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 include 'config/database.php';
+include 'nav.php';
 
 $query_customer = "SELECT * FROM customers";
 $stmt_customer = $con->prepare($query_customer);
@@ -35,62 +38,9 @@ $lastorder = $stmt_lastorder->rowCount();
 </head>
 
 <body>
-    <div class="container-fuild bg-dark">
-        <div class="container">
+    <?php
 
-            <nav class="navbar-expand-lg py-2">
-
-                <div class="collapse navbar-collapse d-flex justify-content-between">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link active text-white" href="#">Home</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Product
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="product_create.php">Create Product</a></li>
-                                <li><a class="dropdown-item" href="product_read.php">Product Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Customer
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="customer_create.php">Create Customer</a></li>
-                                <li><a class="dropdown-item" href="customer_read.php">Customer Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Order
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="neworder_create.php">Create New Order</a></li>
-                                <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="session_logout.php">Log Out</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </div>
-
-
-    <h1 class="fw-bold d-flex justify-content-center p-5">Welcome</h1>
-
-    <?php 
-    if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
+    if (filter_var($_SESSION['correct_username'], FILTER_VALIDATE_EMAIL)) {
         $query = 'SELECT * from customers WHERE email= ?';
     } else {
         $query = 'SELECT * FROM customers WHERE username=?';
@@ -100,15 +50,18 @@ $lastorder = $stmt_lastorder->rowCount();
     $stmt->bindParam(1, $_SESSION['correct_username']);
     $stmt->execute();
     $numCustomer = $stmt->rowCount();
-
     if ($numCustomer > 0) {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+        extract($row);
+    ?>
 
+        <h1 class="fw-bold d-flex justify-content-center p-5">Welcome</h1>
+
+    <?php
         if ($row['gender'] == 'male') {
-            echo "<p class='text-center'>Mr. ".$row['firstname']." ".$row['lastname']."</p>";
+            echo "<p class='text-center'>Mr. " . $row['firstname'] . " " . $row['lastname'] . "</p>";
         } else {
-           echo "<p class='text-center'>Ms. ".$row['firstname']." ".$row['lastname']."</p>";
+            echo "<p class='text-center'>Ms. " . $row['firstname'] . " " . $row['lastname'] . "</p>";
         }
     }
     ?>
@@ -122,25 +75,25 @@ $lastorder = $stmt_lastorder->rowCount();
             Products<br>
             <?php echo $rowcount_product ?>
         </div>
-        </div>
-        <div class="text-center row p-5">
+    </div>
+    <div class="text-center row p-5">
         <div class="border border-primary text-center col me-5">
             Orders<br>
             <?php echo $rowcount_order ?>
         </div>
-        <?php 
+        <?php
         if ($lastorder > 0) {
             $row = $stmt_lastorder->fetch(PDO::FETCH_ASSOC);
         ?>
-        <div class="border border-primary text-center col">
-            Last Order<br>
-            <?php echo $row['order_id'] ?>
-        </div>
-        <?php 
+            <div class="border border-primary text-center col">
+                Last Order<br>
+                <?php echo $row['order_id'] ?>
+            </div>
+        <?php
         }
         ?>
     </div>
-    
+
 
 
 

@@ -18,6 +18,9 @@ include 'config/database.php';
 </head>
 
 <body>
+<?php
+   include 'nav.php';
+    ?>
 
     <div class="container">
         <div class="page-header">
@@ -64,14 +67,17 @@ include 'config/database.php';
                 echo "<tr>";
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 extract($row);
+                $price_decimal = !preg_match("/[.]/", $row['price']) ? $row['price'] . ".00" : $row['price'];
+                $subtotal = doubleval($price_decimal) * doubleval($quantity);
+                $subtotal_decimal = !preg_match("/[.]/", $subtotal) ? $subtotal . ".00" : $subtotal;
                 echo "<td>$order_details_id</td>";
                 echo "<td>{$product_id}</td>";
                 echo "<td>{$name}</td>";
                 echo "<td class='text-end'>{$quantity}</td>";
-                echo "<td class='text-end'>{$price}</td>";
-                echo "<td class='text-end'>".intval($price) * intval($quantity)."</td>";
+                echo "<td class='text-end'>{$price_decimal}</td>";
+                echo "<td class='text-end'>{$subtotal_decimal}</td>";
                 echo "</tr>";
-                $grand_total = $grand_total + (intval($price) * intval($quantity));
+                $grand_total = $grand_total + (doubleval($price_decimal) * doubleval($quantity));
             }
     
             echo "<tr>";
@@ -89,8 +95,8 @@ include 'config/database.php';
             echo "<td></td>";
             echo "<td></td>";
             echo "<td></td>";
-            echo "<td class='text-center'><a href='neworder_update.php?id=$id' class='btn btn-primary me-3'>Edit</a>";
-            echo "<a href='neworder_read.php' class='btn btn-danger'>Back to read Order</a></td>";
+            echo "<td class='text-center'><a href='neworder_update.php?id={$id}' class='btn btn-primary me-3'>Edit</a>";
+            echo "<a href='neworder_read.php?id=$username' class='btn btn-danger'>Back to read Order</a></td>";
             echo "</tr>";
 
             echo "</table>";

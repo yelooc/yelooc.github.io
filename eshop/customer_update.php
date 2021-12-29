@@ -7,7 +7,7 @@ include 'config/database.php';
 
 try {
 
-    $query = "SELECT username, email, firstname, lastname, gender, date_of_birth, account_status, password FROM customers WHERE username = :username";
+    $query = "SELECT username, path, email, firstname, lastname, gender, date_of_birth, account_status, password FROM customers WHERE username = :username";
     $stmt = $con->prepare($query);
 
     $stmt->bindParam(":username", $id);
@@ -15,6 +15,7 @@ try {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     $username = $row['username'];
+    $path = $row['path'];
     $firstname = $row['firstname'];
     $lastname = $row['lastname'];
     $email = $row['email'];
@@ -23,7 +24,7 @@ try {
     $password = $row['password'];
     $account_status = $row['account_status'];
     // shorter way to do that is extract($row)
-  
+
 }
 
 // show error
@@ -41,56 +42,61 @@ catch (PDOException $exception) {
 </head>
 
 <body>
-<div class="container-fuild bg-dark">
-        <div class="container">
+    <?php
 
-            <nav class="navbar-expand-lg py-2">
+    echo "<div class='container-fuild bg-dark'>";
+    echo      "<div class='container'>";
+    echo      "<nav class='navbar-expand-lg py-2'>";
+    echo     "<div class='collapse navbar-collapse d-flex justify-content-between'>";
+    echo          "<ul class='navbar-nav'>";
+    echo          "<li class='nav-item'>";
+    echo "<a class='nav-link text-secondary' href='home.php?id={$username}'>Home</a>";
+    echo "</li>";
+    echo "<li class='nav-item dropdown'>";
+    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
+    echo "Product";
+    echo "</a>";
+    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
+    echo "<li><a class='dropdown-item' href='product_create.php?id={$username}'>Create Product</a></li>";
+    echo "<li><a class='dropdown-item' href='product_read.php?id={$username}'>Product Listing</a></li>";
+    echo "</ul>";
+    echo "</li>";
+    echo "<li class='nav-item dropdown'>";
+    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
+    echo "Customer";
+    echo "</a>";
+    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
+    echo "<li><a class='dropdown-item' href='customer_create.php?id={$username}'>Create Customer</a></li>";
+    echo "<li><a class='dropdown-item' href='customer_read.php?id={$username}'>Customer Listing</a></li>";
+    echo "</ul>";
+    echo "</li>";
+    echo "<li class='nav-item dropdown'>";
+    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
+    echo "Order";
+    echo "</a>";
+    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
+    echo "<li><a class='dropdown-item' href='neworder_create.php?id={$username}'>Create New Order</a></li>";
+    echo "<li><a class='dropdown-item' href='neworder_read.php?id={$username}'>Order Listing</a></li>";
+    echo "</ul>";
+    echo "</li>";
+    echo "<li class='nav-item'>";
+    echo "<a class='nav-link text-secondary' href='contact_us.php?id={$username}'>Contact us</a>";
+    echo "</li>";
+    echo "</ul>";
+    echo "<ul class='navbar-nav'>";
+    echo "<li class='nav-item'>";
+    echo "<a class='nav-link text-secondary' href='customer_update.php?id={$username}'>$username</a>";
+    echo "</li>";
+    echo "<li class='nav-item'>";
+    echo "<a class='nav-link text-secondary' href='session_logout.php?id={$id}'>Log Out</a>";
+    echo "</li>";
+    echo "</ul>";
+    echo "</div>";
+    echo "</nav>";
+    echo "</div>";
+    echo "</div>";
 
-                <div class="collapse navbar-collapse d-flex justify-content-between">
-                    <ul class="navbar-nav mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="home.php">Home</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Product
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="product_create.php">Create Product</a></li>
-                                <li><a class="dropdown-item" href="product_read.php">Product Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle active text-white" href="#" role="button" data-bs-toggle="dropdown">
-                                Customer
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="customer_create.php">Create Customer</a></li>
-                                <li><a class="dropdown-item" href="customer_read.php">Customer Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Order
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="neworder_create.php">Create New Order</a></li>
-                                <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="session_logout.php">Log Out</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </div>
+    ?>
 
     <div class="container">
         <div class="page-header">
@@ -99,157 +105,147 @@ catch (PDOException $exception) {
 
         <?php
 
-if ($_POST) {
-    try {
-    
-        $query = "UPDATE customers
+        if ($_POST) {
+            try {
+
+                $query = "UPDATE customers
                   SET username=:username, firstname=:firstname,
                   lastname=:lastname, email=:email, gender=:gender, date_of_birth=:date_of_birth, password=:new_password, account_status=:account_status WHERE username = :username";
 
-        $stmt = $con->prepare($query);
+                $stmt = $con->prepare($query);
 
-        $username = htmlspecialchars(strip_tags($_POST['username']));
-        $firstname = htmlspecialchars(strip_tags($_POST['firstname']));
-        $lastname = htmlspecialchars(strip_tags($_POST['lastname']));
-        $email = htmlspecialchars(strip_tags($_POST['email']));
-        $gender = htmlspecialchars(strip_tags($_POST['gender']));
-        $date_of_birth = htmlspecialchars(strip_tags($_POST['date_of_birth']));
-        $new_password = htmlspecialchars(strip_tags($_POST['new_password']));
-        $account_status = htmlspecialchars(strip_tags($_POST['account_status']));
+                $username = htmlspecialchars(strip_tags($_POST['username']));
+                $firstname = htmlspecialchars(strip_tags($_POST['firstname']));
+                $lastname = htmlspecialchars(strip_tags($_POST['lastname']));
+                $email = htmlspecialchars(strip_tags($_POST['email']));
+                $gender = htmlspecialchars(strip_tags($_POST['gender']));
+                $date_of_birth = htmlspecialchars(strip_tags($_POST['date_of_birth']));
+                $new_password = htmlspecialchars(strip_tags($_POST['new_password']));
+                $account_status = htmlspecialchars(strip_tags($_POST['account_status']));
 
-        $stmt->bindParam(':username', $id);
-        $stmt->bindParam(':firstname', $firstname);
-        $stmt->bindParam(':lastname', $lastname);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':gender', $gender);
-        $stmt->bindParam(':date_of_birth', $date_of_birth);
-        $stmt->bindParam(':new_password', $new_password);
-        $stmt->bindParam(':account_status', $account_status);
+                $stmt->bindParam(':username', $id);
+                $stmt->bindParam(':firstname', $firstname);
+                $stmt->bindParam(':lastname', $lastname);
+                $stmt->bindParam(':email', $email);
+                $stmt->bindParam(':gender', $gender);
+                $stmt->bindParam(':date_of_birth', $date_of_birth);
+                $stmt->bindParam(':new_password', $new_password);
+                $stmt->bindParam(':account_status', $account_status);
 
-        $flag = 0;
-        $message = "";
+                $flag = 0;
+                $message = "";
 
-        if (empty($_POST['old_pasword']) && empty($_POST['new_password']) && empty($_POST['comfirm_password'])) {
-            $flag = 0;
-            $unwork_change_new_password = htmlspecialchars(strip_tags($row['password']));
-            $stmt->bindParam(':new_password', $unwork_change_new_password);
-        }
+                if (empty($_POST['old_pasword']) && empty($_POST['new_password']) && empty($_POST['comfirm_password'])) {
+                    $flag = 0;
+                    $unwork_change_new_password = htmlspecialchars(strip_tags($row['password']));
+                    $stmt->bindParam(':new_password', $unwork_change_new_password);
+                }
 
-        if (!preg_match("/[a-zA-Z0-9]{1,}/", $username)) {
-            $message = "Username cannot be empty";
-            $flag = 1;
-        } else {
-            //username validation
-            if (!preg_match("/[a-zA-Z0-9]{6,}/", $username)) {
-                $message = "Username should more than 6 charater";
-                $flag = 1;
-            }
-            if (preg_match("/\s/", $username)) {
-                $message = "Username cannot contain space";
-                $flag = 1;
-            }
-        }
-        if (!preg_match("/[a-zA-Z0-9]{1,}/", $lastname)) {
-            $message = "Last Name cannot be empty";
-            $flag = 1;
-        }
-        if (!preg_match("/[a-zA-Z-0-9]{1,}/", $firstname)) {
-            $message = "First Name cannot be empty";
-            $flag = 1;
-        } else {
-            if (preg_match("/\s/", $firstname)) {
-                $message = "First Name cannot contain space";
-                $flag = 1;
-            }
-        }
-        if (!preg_match("/[a-z0-9]{1,}/", $email)) {
-            $message = "Email cannot be empty";
-            $flag = 1;
-        } else {
-            if (!preg_match("/@/", $email) || !preg_match("/\./", $email)) {
-                $message = "Email must include @ and .";
-                $flag = 1;
-            }
-            if (substr($email, -5, -4) == '@') {
-                $message = "You must fill in xxxxx@gmail.com or others example hotmail, yahoo";
-                $flag = 1;
-            }
-            if (preg_match("/\s/", $email)) {
-                $message = "Email cannot contain space";
-                $flag = 1;
-            }
-        }
-
-        if (!empty($_POST['old_password'])) {
-            if ($_POST['old_password'] != $row['password']) {
-                $flag = 1;
-                $message = "Incorrect old password";
-            } else {
-                if (empty($_POST['new_password'])) {
+                if (empty($lastname)) {
+                    $message = "Last Name cannot be empty";
                     $flag = 1;
-                    $message = "New Password cannot be empty";
+                }
+                if (empty($firstname)) {
+                    $message = "First Name cannot be empty";
+                    $flag = 1;
                 } else {
-                    //comfirm password validation
-                    if (empty($_POST['comfirm_password'])) {
+                    if (preg_match("/\s/", $firstname)) {
+                        $message = "First Name cannot contain space";
                         $flag = 1;
-                        $message = "comfirm password cannot be empty";
-                    } else {
-                        if ($_POST['comfirm_password'] != $_POST['new_password']) {
-                            $flag = 1;
-                            $message = "Comfirm Password should be same with New Password";
-                        }
-                    }
-
-                    //new password validation
-                    if (!preg_match("/[A-Z]/", $_POST['new_password'])) {
-                        $message = "New Password need Upper letter";
-                        $flag = 1;
-                    }
-                    if (!preg_match("/[0-9]/", $_POST['new_password'])) {
-                        $message = "New Password need Numerial";
-                        $flag = 1;
-                    }
-                    if (!preg_match("/[0-9A-Za-z]{8,}/", $_POST['new_password'])) {
-                        $message = "New Password need more than 8 charater";
-                        $flag = 1;
-                    }
-                    if (preg_match("/\s/", $_POST['new_password'])) {
-                        $message = "New Password cannot contain space";
-                        $flag = 1;
-                    }
-                    if ($_POST['new_password'] == $_POST['old_password']) {
-                        $flag = 1;
-                        $message = "new password cannot same with old password";
                     }
                 }
+                if (empty($email)) {
+                    $message = "Email cannot be empty";
+                    $flag = 1;
+                } else {
+                    if (substr($email, -4) != '.com') {
+                        $message = "Not a Valid Email";
+                        $flag = 1;
+                    }
+                    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    } else {
+                        $message = "Not a Valid Email (E.g: xxx@example.com)";
+                        $flag = 1;
+                    }
+                    if (preg_match("/\s/", $email)) {
+                        $message = "Email cannot contain space";
+                        $flag = 1;
+                    }
+                }
+
+                if (!empty($_POST['old_password'])) {
+                    if ($_POST['old_password'] != $row['password']) {
+                        $flag = 1;
+                        $message = "Incorrect old password";
+                    } else {
+                        if (empty($_POST['new_password'])) {
+                            $flag = 1;
+                            $message = "New Password cannot be empty";
+                        } else {
+                            //comfirm password validation
+                            if (empty($_POST['comfirm_password'])) {
+                                $flag = 1;
+                                $message = "comfirm password cannot be empty";
+                            } else {
+                                if ($_POST['comfirm_password'] != $_POST['new_password']) {
+                                    $flag = 1;
+                                    $message = "Comfirm Password should be same with New Password";
+                                }
+                            }
+
+                            //new password validation
+                            if (!preg_match("/[A-Z]/", $_POST['new_password'])) {
+                                $message = "New Password need Upper letter";
+                                $flag = 1;
+                            }
+                            if (!preg_match("/[0-9]/", $_POST['new_password'])) {
+                                $message = "New Password need Numerial";
+                                $flag = 1;
+                            }
+                            if (!preg_match("/[0-9A-Za-z]{8,}/", $_POST['new_password'])) {
+                                $message = "New Password need more than 8 charater";
+                                $flag = 1;
+                            }
+                            if (preg_match("/\s/", $_POST['new_password'])) {
+                                $message = "New Password cannot contain space";
+                                $flag = 1;
+                            }
+                            if ($_POST['new_password'] == $_POST['old_password']) {
+                                $flag = 1;
+                                $message = "new password cannot same with old password";
+                            }
+                        }
+                    }
+                }
+
+                if ($flag == 0) {
+                    if ($stmt->execute()) {
+                        header("Location:customer_success_update_message.php?id=$id");
+                    }
+                } else {
+                    echo "<div class='alert alert-danger'>";
+                    echo $message;
+                    echo "</div>";
+                }
+            }
+            // show errors
+            catch (PDOException $exception) {
+                die('ERROR: ' . $exception->getMessage());
             }
         }
-
-
-
-        if ($flag == 0) {
-            if ($stmt->execute()) {
-                header("Location:customer_read_one.php?id=" . $id);
-                        echo "<div class='alert alert-success'>Record was saved.</div>"; 
-            }
-        } else {
-            echo "<div class='alert alert-danger'>";
-            echo $message;
-            echo "</div>";
-        }
-    }
-    // show errors
-    catch (PDOException $exception) {
-        die('ERROR: ' . $exception->getMessage());
-    }
-}
-?>
+        ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Username</td>
-                    <td><input type='text' name='username' value="<?php echo htmlspecialchars($username, ENT_QUOTES);  ?>" class='form-control' /></td>
+                    <td><input type="text" class='form-control' name='username' value="<?php echo htmlspecialchars($username, ENT_QUOTES);  ?>" READONLY></td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Customer Image</p>
+                    </td>
+                    <td><input type="file" name="fileToUpload" class="form-control" id="fileToUpload"><span><?php echo htmlspecialchars($path, ENT_QUOTES);  ?></span></td>
                 </tr>
                 <tr>
                     <td>First Name</td>
@@ -323,7 +319,9 @@ if ($_POST) {
                     <td></td>
                     <td>
                         <input type='submit' value='Save Changes' class='btn btn-primary' />
-                        <a href='customer_read.php' class='btn btn-danger'>Back to read products</a>
+                        <?php
+                        echo "<a href='customer_read.php?id=$username' class='btn btn-danger'>Back to read customers</a>";
+                        ?>
                     </td>
                 </tr>
             </table>

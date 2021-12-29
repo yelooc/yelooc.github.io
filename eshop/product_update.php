@@ -13,7 +13,6 @@ try {
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     extract($row);
-
 }
 
 // show error
@@ -31,56 +30,9 @@ catch (PDOException $exception) {
 </head>
 
 <body>
-<div class="container-fuild bg-dark">
-        <div class="container">
-
-            <nav class="navbar-expand-lg py-2">
-
-                <div class="collapse navbar-collapse d-flex justify-content-between">
-                    <ul class="navbar-nav mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="home.php">Home</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle active text-white" href="#" role="button" data-bs-toggle="dropdown">
-                                Product
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="product_create.php">Create Product</a></li>
-                                <li><a class="dropdown-item" href="product_read.php">Product Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Customer
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="customer_create.php">Create Customer</a></li>
-                                <li><a class="dropdown-item" href="customer_read.php">Customer Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Order
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="neworder_create.php">Create New Order</a></li>
-                                <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="session_logout.php">Log Out</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </div>
+    <?php
+    include 'nav.php';
+    ?>
 
     <div class="container">
         <div class="page-header">
@@ -89,31 +41,31 @@ catch (PDOException $exception) {
 
         <?php
 
-if ($_POST) {
-    try {
+        if ($_POST) {
+            try {
 
-        $query = "UPDATE products
+                $query = "UPDATE products
                   SET name=:name, description=:description,
    price=:price, promotionprice=:promotionprice, manufacturedate=:manufacturedate, expireddate=:expireddate WHERE product_id = :product_id";
 
-        $stmt = $con->prepare($query);
+                $stmt = $con->prepare($query);
 
-        $name = htmlspecialchars(strip_tags($_POST['name']));
-        $description = htmlspecialchars(strip_tags($_POST['description']));
-        $price = htmlspecialchars(strip_tags($_POST['price']));
-        $promotionprice = htmlspecialchars(strip_tags($_POST['promotionprice']));
-        $manufacturedate = htmlspecialchars(strip_tags($_POST['manufacturedate']));
-        $expireddate = htmlspecialchars(strip_tags($_POST['expireddate']));
+                $name = htmlspecialchars(strip_tags($_POST['name']));
+                $description = htmlspecialchars(strip_tags($_POST['description']));
+                $price = htmlspecialchars(strip_tags($_POST['price']));
+                $promotionprice = htmlspecialchars(strip_tags($_POST['promotionprice']));
+                $manufacturedate = htmlspecialchars(strip_tags($_POST['manufacturedate']));
+                $expireddate = htmlspecialchars(strip_tags($_POST['expireddate']));
 
-        $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':description', $description);
-        $stmt->bindParam(':price', $price);
-        $stmt->bindParam(':promotionprice', $promotionprice);
-        $stmt->bindParam(':manufacturedate', $manufacturedate);
-        $stmt->bindParam(':expireddate', $expireddate);
-        $stmt->bindParam(':product_id', $id);
+                $stmt->bindParam(':name', $name);
+                $stmt->bindParam(':description', $description);
+                $stmt->bindParam(':price', $price);
+                $stmt->bindParam(':promotionprice', $promotionprice);
+                $stmt->bindParam(':manufacturedate', $manufacturedate);
+                $stmt->bindParam(':expireddate', $expireddate);
+                $stmt->bindParam(':product_id', $id);
 
-        $flag = 0;
+                $flag = 0;
                 $message = "";
 
                 //Date validation
@@ -192,7 +144,7 @@ if ($_POST) {
                 if (preg_match("/[a-zA-Z]{1,}/", $price)) {
                     $message = "Price should be numbers only";
                     $flag = 1;
-                } 
+                }
                 if (empty($category_id)) {
                     $message = "Category cannot be empty";
                     $flag = 1;
@@ -209,11 +161,7 @@ if ($_POST) {
 
                 if ($flag == 0) {
                     if ($stmt->execute()) {
-                        // session_start();
-                        // $_SESSION['save'] == "save";
-                        header("Location:product_read_one.php?id=" . $id);
-                        echo "<div class='alert alert-success'>Record was saved.</div>"; 
-                        
+                        header("Location:product_success_update_message.php?id=$id");
                     }
                 } else {
                     echo "<div class='alert alert-danger'>";
@@ -221,12 +169,12 @@ if ($_POST) {
                     echo "</div>";
                 }
             }
-    // show errors
-    catch (PDOException $exception) {
-        die('ERROR: ' . $exception->getMessage());
-    }
-} 
-?>
+            // show errors
+            catch (PDOException $exception) {
+                die('ERROR: ' . $exception->getMessage());
+            }
+        }
+        ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post">
             <table class='table table-hover table-responsive table-bordered'>
@@ -247,6 +195,12 @@ if ($_POST) {
                     <td><input type='text' name='promotionprice' value="<?php echo htmlspecialchars($promotionprice, ENT_QUOTES);  ?>" class='form-control' /></td>
                 </tr>
                 <tr>
+                    <td>
+                        <p>Product Image</p>
+                    </td>
+                    <td><input type="file" name="fileToUpload" class="form-control" id="fileToUpload"><span><?php echo htmlspecialchars($path_img, ENT_QUOTES);  ?></span></td>
+                </tr>
+                <tr>
                     <td>Manufacture Date</td>
                     <td><input type='date' name='manufacturedate' class='form-control' value="<?php echo htmlspecialchars($manufacturedate, ENT_QUOTES);  ?>" /></td>
                 </tr>
@@ -258,7 +212,9 @@ if ($_POST) {
                     <td></td>
                     <td>
                         <input type='submit' value='Save Changes' class='btn btn-primary' />
-                        <a href='product_read.php' class='btn btn-danger'>Back to read products</a>
+                        <?php
+                        echo "<a href='product_read.php?id=$username' class='btn btn-danger'>Back to read products</a>";
+                        ?>
                     </td>
                 </tr>
             </table>

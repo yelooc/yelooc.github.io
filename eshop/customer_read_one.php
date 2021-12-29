@@ -1,35 +1,36 @@
 <?php
 include 'session_login.php';
 
-        $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
-        include 'config/database.php';
-        
-        try {
-   
-            $query = "SELECT username, email, firstname, lastname, gender, date_of_birth, registration_date_and_time,  account_status FROM customers WHERE username = :username";
-            $stmt = $con->prepare($query);
-        
-            $stmt->bindParam(":username", $id);
-            $stmt->execute();
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+$id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
+include 'config/database.php';
 
-            $username = $row['username'];
-            $firstname = $row['firstname'];
-            $lastname = $row['lastname'];
-            $email = $row['email'];
-            $gender = $row['gender'];
-            $date_of_birth = $row['date_of_birth'];
-            $registration_date_and_time = $row['registration_date_and_time'];
-            $account_status = $row['account_status'];
-            // shorter way to do that is extract($row)
-        }
+try {
 
-        // show error
-        catch (PDOException $exception) {
-            die('ERROR: ' . $exception->getMessage());
-        }
-    
-        ?>
+    $query = "SELECT username, path, email, firstname, lastname, gender, date_of_birth, registration_date_and_time,  account_status FROM customers WHERE username = :username";
+    $stmt = $con->prepare($query);
+
+    $stmt->bindParam(":username", $id);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $username = $row['username'];
+    $path = $row['path'];
+    $firstname = $row['firstname'];
+    $lastname = $row['lastname'];
+    $email = $row['email'];
+    $gender = $row['gender'];
+    $date_of_birth = $row['date_of_birth'];
+    $registration_date_and_time = $row['registration_date_and_time'];
+    $account_status = $row['account_status'];
+    // shorter way to do that is extract($row)
+}
+
+// show error
+catch (PDOException $exception) {
+    die('ERROR: ' . $exception->getMessage());
+}
+
+?>
 
 <!DOCTYPE HTML>
 <html>
@@ -40,70 +41,77 @@ include 'session_login.php';
 </head>
 
 <body>
-<div class="container-fuild bg-dark">
-        <div class="container">
+    <?php
+    echo "<div class='container-fuild bg-dark'>";
+    echo      "<div class='container'>";
+    echo      "<nav class='navbar-expand-lg py-2'>";
+    echo     "<div class='collapse navbar-collapse d-flex justify-content-between'>";
+    echo          "<ul class='navbar-nav'>";
+    echo          "<li class='nav-item'>";
+    echo "<a class='nav-link text-secondary' href='home.php?id={$username}'>Home</a>";
+    echo "</li>";
+    echo "<li class='nav-item dropdown'>";
+    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
+    echo "Product";
+    echo "</a>";
+    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
+    echo "<li><a class='dropdown-item' href='product_create.php?id={$username}'>Create Product</a></li>";
+    echo "<li><a class='dropdown-item' href='product_read.php?id={$username}'>Product Listing</a></li>";
+    echo "</ul>";
+    echo "</li>";
+    echo "<li class='nav-item dropdown'>";
+    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
+    echo "Customer";
+    echo "</a>";
+    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
+    echo "<li><a class='dropdown-item' href='customer_create.php?id={$username}'>Create Customer</a></li>";
+    echo "<li><a class='dropdown-item' href='customer_read.php?id={$username}'>Customer Listing</a></li>";
+    echo "</ul>";
+    echo "</li>";
+    echo "<li class='nav-item dropdown'>";
+    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
+    echo "Order";
+    echo "</a>";
+    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
+    echo "<li><a class='dropdown-item' href='neworder_create.php?id={$username}'>Create New Order</a></li>";
+    echo "<li><a class='dropdown-item' href='neworder_read.php?id={$username}'>Order Listing</a></li>";
+    echo "</ul>";
+    echo "</li>";
+    echo "<li class='nav-item'>";
+    echo "<a class='nav-link text-secondary' href='contact_us.php?id={$username}'>Contact us</a>";
+    echo "</li>";
+    echo "</ul>";
+    echo "<ul class='navbar-nav'>";
+    echo "<li class='nav-item'>";
+    echo "<a class='nav-link text-secondary' href='customer_update.php?id={$username}'>$username</a>";
+    echo "</li>";
+    echo "<li class='nav-item'>";
+    echo "<a class='nav-link text-secondary' href='session_logout.php?id={$id}'>Log Out</a>";
+    echo "</li>";
+    echo "</ul>";
+    echo "</div>";
+    echo "</nav>";
+    echo "</div>";
+    echo "</div>";
 
-            <nav class="navbar-expand-lg py-2">
-
-                <div class="collapse navbar-collapse d-flex justify-content-between">
-                    <ul class="navbar-nav mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="home.php">Home</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Product
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="product_create.php">Create Product</a></li>
-                                <li><a class="dropdown-item" href="product_read.php">Product Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle active text-white" href="#" role="button" data-bs-toggle="dropdown">
-                                Customer
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="customer_create.php">Create Customer</a></li>
-                                <li><a class="dropdown-item" href="customer_read.php">Customer Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                                Order
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="neworder_create.php">Create New Order</a></li>
-                                <li><a class="dropdown-item" href="neworder_read.php">Order Listing</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="contact_us.php">Contact us</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="session_logout.php">Log Out</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </div>
+    ?>
 
     <div class="container">
         <div class="page-header">
             <h1>Read Customer</h1>
         </div>
-
+        <br>
+        <img src="<?php echo htmlspecialchars($path, ENT_QUOTES); ?>" width="100px">
+        <br><br>
         <table class='table table-hover table-responsive table-bordered'>
-        <tr>
+            <tr>
                 <td>Username</td>
                 <td><?php echo htmlspecialchars($username, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
                 <td>Name</td>
-                <td><?php echo htmlspecialchars($firstname, ENT_QUOTES)." "; echo htmlspecialchars($lastname, ENT_QUOTES);  ?></td>
+                <td><?php echo htmlspecialchars($firstname, ENT_QUOTES) . " ";
+                    echo htmlspecialchars($lastname, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
                 <td>Email</td>
@@ -120,7 +128,7 @@ include 'session_login.php';
             <tr>
                 <td>Registration Date And Time</td>
                 <td><?php echo htmlspecialchars($registration_date_and_time, ENT_QUOTES);  ?></td>
-            </tr> 
+            </tr>
             <tr>
                 <td>Account Status</td>
                 <td><?php echo htmlspecialchars($account_status, ENT_QUOTES);  ?></td>
@@ -128,10 +136,26 @@ include 'session_login.php';
             <tr>
                 <td></td>
                 <td>
-                <?php 
-                    echo "<a href='customer_update.php?id=$id' class='btn btn-primary'>Edit</a>"
+                    <?php
+
+                    echo "<a href='customer_update.php?id=$id' class='btn btn-primary me-2'>Edit</a>";
+                    if (filter_var($_SESSION['correct_username'], FILTER_VALIDATE_EMAIL)) {
+                        $query = 'SELECT * from customers WHERE email= ?';
+                    } else {
+                        $query = 'SELECT * FROM customers WHERE username=?';
+                    }
+
+                    $stmt = $con->prepare($query);
+                    $stmt->bindParam(1, $_SESSION['correct_username']);
+                    $stmt->execute();
+                    $numCustomer = $stmt->rowCount();
+
+                    if ($numCustomer > 0) {
+                        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                        extract($row);
+                        echo "<a href='customer_read.php?id=$username' class='btn btn-danger'>Back to read customers</a>";
+                    }
                     ?>
-                    <a href='customer_read.php' class='btn btn-danger'>Back to read customers</a>
                 </td>
             </tr>
         </table>
@@ -141,5 +165,3 @@ include 'session_login.php';
 </body>
 
 </html>
-
-
