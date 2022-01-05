@@ -2,7 +2,7 @@
 
 session_start();
 if(!isset($_SESSION['correct_username'])){
-    header('Location:login.php?msg=pleaselogin');
+    header('Location:index.php?msg=pleaselogin');
 }
 
 ?>
