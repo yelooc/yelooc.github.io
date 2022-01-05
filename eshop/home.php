@@ -3,8 +3,6 @@
 <!--Topic : Eshop Home-->
 <?php
 include 'session_login.php';
-
-$id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 include 'config/database.php';
 include 'nav.php';
 

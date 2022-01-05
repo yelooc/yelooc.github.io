@@ -1,31 +1,27 @@
 <?php
 include 'session_login.php';
-
-$id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
-
 include 'config/database.php';
-
 
 $query_lastorder = "SELECT * FROM order_summary ORDER BY order_id DESC LIMIT 1";
 $stmt_lastorder = $con->prepare($query_lastorder);
 $stmt_lastorder->execute();
 $lastorder = $stmt_lastorder->rowCount();
-                           
+
 ?>
 
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <title>Neworder Create SuccessFully</title>
+    <title>NewOrder Create SuccessFully</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
 <body>
     <div class="text-center border border-secondary p-5" style="margin:200px">
 
-    <h5>Order Create SuccessFully</h5>
-    <?php
+        <h5>Order Create SuccessFully</h5>
+        <?php
         if ($lastorder > 0) {
             $row = $stmt_lastorder->fetch(PDO::FETCH_ASSOC);
         ?>
@@ -35,9 +31,9 @@ $lastorder = $stmt_lastorder->rowCount();
         }
         ?>
         <?php
-        echo "<a href='neworder_read.php?id=$id'><button class='btn btn-primary'>OK</button></a>"
+        echo "<a href='neworder_read.php'><button class='btn btn-primary'>OK</button></a>"
         ?>
-      
+
     </div>
 
 </body>

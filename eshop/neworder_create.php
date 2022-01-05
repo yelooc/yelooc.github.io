@@ -1,15 +1,13 @@
 <?php
 include 'session_login.php';
-$id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 include 'config/database.php';
-
 include 'nav.php';
 ?>
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <title>PDO - Create a Record - PHP CRUD Tutorial</title>
+    <title>Order Create</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
@@ -111,7 +109,7 @@ include 'nav.php';
                         }
                         // echo "<div class='alert alert-success'>Record was saved. Last inserted ID is : $last_id</div>";
                         
-                        header("Location:neworder_success_create_message.php?id={$id}");
+                        header("Location:neworder_success_create_message.php");
                     } else {
 
                         $message = "Unable to save record";
@@ -129,7 +127,7 @@ include 'nav.php';
         }
         ?>
 
-        <form action="<?php echo $_SERVER["PHP_SELF"] . "?id={$id}" ?>" method="POST">
+        <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="POST">
 
             <table class='table table-hover table-responsive table-bordered m-0'>
 
@@ -175,7 +173,7 @@ include 'nav.php';
             }
             foreach ($array as $product_row => $product_ID) {
             ?>
-                <table class='table table-hover table-responsive table-bordered' id='order_table'>
+                <table class='table table-hover table-responsive table-bordered m-0' id='order_table'>
                     <tr class="productRow">
                         <td class='col-5'>Product</td>
                         <td class='col-3'>
@@ -218,7 +216,7 @@ include 'nav.php';
                 <div class="col text-end">
                     <input type='submit' value='Save' class='btn btn-primary' />
                     <?php
-                    echo "<a href='neworder_read.php?id={$id}' class='btn btn-danger'>Back to read order</a>";
+                    echo "<a href='neworder_read.php' class='btn btn-danger'>Back to read order</a>";
                     ?>
                 </div>
             </div>

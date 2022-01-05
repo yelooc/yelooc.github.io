@@ -12,26 +12,29 @@ try {
             $stmt = $con->prepare($qdelete);
             $stmt->bindParam(":username", $id);
             $stmt->execute();
-
-            if (filter_var($_SESSION['correct_username'], FILTER_VALIDATE_EMAIL)) {
-                $query = 'SELECT * from customers WHERE email= ?';
-            } else {
-                $query = 'SELECT * FROM customers WHERE username=?';
-            }
-
-            $stmt = $con->prepare($query);
-            $stmt->bindParam(1, $_SESSION['correct_username']);
-            $stmt->execute();
-            $numCustomer = $stmt->rowCount();
-
-            if ($numCustomer > 0) {
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                extract($row);
-            header("Location:customer_read.php?id=$username");
-            }
+            
 }
 
 catch (PDOException $exception) {
     die('ERROR: ' . $exception->getMessage());
 }
 ?>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Customer Delete SuccessFully</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+</head>
+<body>
+    <div class="text-center border border-secondary p-5" style="margin:200px">
+
+        <h5>Customer Delete SuccessFully</h5>
+        <div>Customer's Username is : <?php echo htmlspecialchars($id, ENT_QUOTES);  ?><br>
+        <?php
+        echo "<a href='customer_read.php'><button class='btn btn-primary'>OK</button></a>"
+        ?>
+      
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</html>

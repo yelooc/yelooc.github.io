@@ -1,26 +1,11 @@
 <?php
 include 'session_login.php';
-
 $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
-
 include 'config/database.php';
-
+include 'nav.php';
 ?>
 
-<!DOCTYPE HTML>
-<html>
-
-<head>
-    <title>PDO - Read One Record - PHP CRUD Tutorial</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-</head>
-
-<body>
-    <?php
-    include 'nav.php';
-    ?>
-
-    <?php
+<?php
     try {
 
         $query = "SELECT * FROM products WHERE product_id = :id ";
@@ -37,12 +22,22 @@ include 'config/database.php';
     }
     ?>
 
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title><?php echo htmlspecialchars($name, ENT_QUOTES);  ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+</head>
+
+<body>
+
     <div class="container">
         <div class="page-header">
             <h1>Read Product</h1>
         </div>
         <br>
-        <img src="<?php echo htmlspecialchars($path_img, ENT_QUOTES); ?>" width="100px">
+        <img src="<?php echo htmlspecialchars($path_img, ENT_QUOTES); ?>" style='object-fit: cover;height:100px;width:100px;'>
         <br><br>
         <table class='table table-hover table-responsive table-bordered'>
             <tr>
@@ -76,22 +71,7 @@ include 'config/database.php';
                 <td>
                     <?php
                     echo "<a href='product_update.php?id=$id' class='btn btn-primary me-2'>Edit</a>";
-                    if (filter_var($_SESSION['correct_username'], FILTER_VALIDATE_EMAIL)) {
-                        $query = 'SELECT * from customers WHERE email= ?';
-                    } else {
-                        $query = 'SELECT * FROM customers WHERE username=?';
-                    }
-
-                    $stmt = $con->prepare($query);
-                    $stmt->bindParam(1, $_SESSION['correct_username']);
-                    $stmt->execute();
-                    $numCustomer = $stmt->rowCount();
-
-                    if ($numCustomer > 0) {
-                        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                        extract($row);
-                        echo "<a href='product_read.php?id=$username' class='btn btn-danger'>Back to read products</a>";
-                    }
+                    echo "<a href='product_read.php' class='btn btn-danger'>Back to read products</a>";
                     ?>
                 </td>
             </tr>

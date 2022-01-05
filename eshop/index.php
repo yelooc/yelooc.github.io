@@ -21,7 +21,6 @@
 
     include 'config/database.php';
 
-
     $message = "";
     $flag = 0;
 
@@ -57,7 +56,7 @@
                     if ($row['account_status'] == 'active') {
                         $_SESSION["correct_username"] = $_POST['username'];
                         
-                        header("Location:home.php?id={$username}");
+                        header("Location:home.php");
                     } else {
                         $flag = 1;
                         $message = 'Your Account is suspended';

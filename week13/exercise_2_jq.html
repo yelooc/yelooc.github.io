@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Exercise 2 JQ</title>
+</head>
+<script  
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+</script>
+<script>
+	$(document).ready(function(){
+	$("button").click(function(){
+	var mark = $("#mark").val();
+
+	if(mark>=85 && mark<=100){	
+		$("#grade").css("color" , "black");
+		$("#grade").text("A+");
+		$("#gradepoint").css("color" , "black");
+		$("#gradepoint").text("4.00");
+		$("#remarks").css("color" , "black");
+		$("#remarks").text("Outstanding");
+		$('span').css('display','none');
+		$("span").fadeIn(2000);
+	}
+	
+	else if(mark>=80 && mark<=84){
+		$("#grade").css("color" , "black");
+		$("#grade").text("A");
+		$("#gradepoint").css("color" , "black");
+		$("#gradepoint").text("4.00");
+		$("#remarks").css("color" , "black");
+		$("#remarks").text("Excellent");
+		$('span').css('display','none');
+		$("span").fadeIn(2000);
+	}
+	
+	else if(mark>=75 && mark<=79){
+		$("#grade").css("color" , "black");
+		$("#grade").text("A-");
+		$("#gradepoint").css("color" , "black");
+		$("#gradepoint").text("3.67");
+		$("#remarks").css("color" , "black");
+		$("#remarks").text("Good");
+		$('span').css('display','none');
+		$("span").fadeIn(2000);
+	}
+	
+	else if(mark>=70 && mark<=74){
+		$("#grade").css("color" , "black");
+		$("#grade").text("B+");
+		$("#gradepoint").css("color" , "black");
+		$("#gradepoint").text("3.33");
+		$("#remarks").css("color" , "black");
+		$("#remarks").text("Good");
+		$('span').css('display','none');
+		$("span").fadeIn(2000);
+	} 
+	
+	else if(mark>=65 && mark<=69){
+		$("#grade").css("color" , "black");
+		$("#grade").text("B");
+		$("#gradepoint").css("color" , "black");
+		$("#gradepoint").text("3.00");
+		$("#remarks").css("color" , "black");
+		$("#remarks").text("Satisfactory");
+		$('span').css('display','none');
+		$("span").fadeIn(2000);
+	}	 
+	
+	else if(mark>=60 && mark<=64){
+		$("#grade").css("color" , "black");
+		$("#grade").text("B-");
+		$("#gradepoint").css("color" , "black");
+		$("#gradepoint").text("2.67");
+		$("#remarks").css("color" , "black");
+		$("#remarks").text("Satisfactory");
+		$('span').css('display','none');
+		$("span").fadeIn(2000);
+	}
+
+	else if(mark>=55 && mark<=59){
+		$("#grade").css("color" , "black");
+		$("#grade").text("C+");
+		$("#gradepoint").css("color" , "black");
+		$("#gradepoint").text("2.33");
+		$("#remarks").css("color" , "black");
+		$("#remarks").text("Pass");	
+		$('span').css('display','none');
+		$("span").fadeIn(2000);
+	}	
+		
+	else if(mark>=50 && mark<=54){
+		$("#grade").css("color" , "black");
+		$("#grade").text("C");
+		$("#gradepoint").css("color" , "black");
+		$("#gradepoint").text("2.00");
+		$("#remarks").css("color" , "black");
+		$("#remarks").text("Pass");
+		$('span').css('display','none');
+		$("span").fadeIn(2000);
+	} 
+	
+	else if(mark>=45 && mark<=49){
+		$("#grade").css("color" , "red");
+		$("#grade").text("D+");
+		$("#gradepoint").css("color" , "red");
+		$("#gradepoint").text("1.67");
+		$("#remarks").css("color" , "red");
+		$("#remarks").text("Sufficient for the award of credit");
+		$('span').css('display','none');
+		$("span").fadeIn(2000);
+	}	 
+	
+	else if(mark>=40 && mark<=44){
+		$("#grade").css("color" , "red");
+		$("#grade").text("D");
+		$("#gradepoint").css("color" , "red");
+		$("#gradepoint").text("1.33");
+		$("#remarks").css("color" , "red");
+		$("#remarks").text("Sufficient for the award of credit");
+		$('span').css('display','none');
+		$("span").fadeIn(2000);
+	}
+	
+	else if(mark>=30 && mark<=39){	
+		$("#grade").css("color" , "red");
+		$("#grade").text("E");
+		$("#gradepoint").css("color" , "red");
+		$("#gradepoint").text("1.00");
+		$("#remarks").css("color" , "red");
+		$("#remarks").text("Fail");
+		$('span').css('display','none');
+		$("span").fadeIn(2000);
+	}
+
+	else if(mark>=0 && mark<=29){
+		$("#grade").css("color" , "red");
+		$("#grade").text("F");
+		$("#gradepoint").css("color" , "red");
+		$("#gradepoint").text("0.00");
+		$("#remarks").css("color" , "red");
+		$("#remarks").text("Fail");	
+		$('span').css('display','none');
+		$("span").fadeIn(2000);
+	}
+	
+	});
+	});
+</script>
+<style>
+	span{ display:none; }
+</style>
+<body>
+	<input type = "text" id = "mark">
+	<button type = "button">Click</button><br><br>
+	Grade: <span id = "grade"></span><br><br>
+	Grade Point: <span id = "gradepoint"></span><br><br>
+	Remarks: <span id = "remarks"></span><br><br>	
+</body>
+</html>

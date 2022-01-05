@@ -1,22 +1,23 @@
 <?php
 include 'session_login.php';
 include 'config/database.php';
+
 ?>
 
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <title>Product Create SuccessFully</title>
+    <title>Category Create SuccessFully</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
 <body>
     <div class="text-center border border-secondary p-5" style="margin:200px">
 
-        <h5>Product Create SuccessFully</h5>
+        <h5>Category Create SuccessFully</h5>
         <?php
-        echo "<a href='product_read.php'><button class='btn btn-primary'>OK</button></a>"
+        echo "<a href='category_read.php'><button class='btn btn-primary'>OK</button></a>"
         ?>
       
     </div>

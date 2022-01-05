@@ -1,9 +1,8 @@
 <?php
 include 'session_login.php';
-
 $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
-
 include 'config/database.php';
+include 'nav.php';
 
 try {
 
@@ -25,14 +24,19 @@ catch (PDOException $exception) {
 <html>
 
 <head>
-    <title>PDO - Product Update - PHP CRUD Tutorial</title>
+    <title><?php echo htmlspecialchars($name, ENT_QUOTES);  ?> (Update)</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("#remove").click(function(){
+    $("img").attr("src", "uploads/noimg_product.png");
+  });
+});
+</script>
 
 <body>
-    <?php
-    include 'nav.php';
-    ?>
 
     <div class="container">
         <div class="page-header">
@@ -42,11 +46,59 @@ catch (PDOException $exception) {
         <?php
 
         if ($_POST) {
+            if (!empty($_FILES['fileToUpload']['name'])) {
+            if ("uploads/".$_FILES['fileToUpload']['name']!=$row['path_img']) {
+
+                $target_dir = "uploads/";
+                if($row['path_img']!='uploads/noimg_product.png'){
+                    unlink($row['path_img']);
+                }
+                $target_dir = "uploads/".$row['product_id'];
+                $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+                $isUploadOK = TRUE;
+                $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+                $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+
+                if ($check !== false) {
+                    $isUploadOK = TRUE;
+                } else {
+                    $flag = 1;
+                    $message .= "File is not an image.<br>";
+                    $isUploadOK = FALSE;
+                }
+
+                if ($_FILES["fileToUpload"]["size"] > 5000000) {
+                    $flag = 1;
+                    $message .= "Sorry, your file is too large.<br>";
+                    $isUploadOK = FALSE;
+                }
+                // Allow certain file formats
+                if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+                    $flag = 1;
+                    $message .= "Sorry, only JPG, JPEG, PNG & GIF files are allowed.<br>";
+                    $isUploadOK = FALSE;
+                }
+
+                if ($isUploadOK == TRUE) {
+                    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+                        header("Location:product_success_create_message.php");
+                    }
+                }
+            }
+        }else{
+            $target_file = $row['path_img'];
+            }
+
+            // if (isset($_POST['remove'])){
+            //     unlink($row['path_img']);
+            //     $target_file = 'uploads/noimg_product.png';
+            // }
+
             try {
 
                 $query = "UPDATE products
                   SET name=:name, description=:description,
-   price=:price, promotionprice=:promotionprice, manufacturedate=:manufacturedate, expireddate=:expireddate WHERE product_id = :product_id";
+   price=:price, promotionprice=:promotionprice, path_img=:path_img, manufacturedate=:manufacturedate, expireddate=:expireddate WHERE product_id = :product_id";
 
                 $stmt = $con->prepare($query);
 
@@ -54,6 +106,7 @@ catch (PDOException $exception) {
                 $description = htmlspecialchars(strip_tags($_POST['description']));
                 $price = htmlspecialchars(strip_tags($_POST['price']));
                 $promotionprice = htmlspecialchars(strip_tags($_POST['promotionprice']));
+                $path_img = $target_file;
                 $manufacturedate = htmlspecialchars(strip_tags($_POST['manufacturedate']));
                 $expireddate = htmlspecialchars(strip_tags($_POST['expireddate']));
 
@@ -61,6 +114,7 @@ catch (PDOException $exception) {
                 $stmt->bindParam(':description', $description);
                 $stmt->bindParam(':price', $price);
                 $stmt->bindParam(':promotionprice', $promotionprice);
+                $stmt->bindParam(':path_img', $path_img);
                 $stmt->bindParam(':manufacturedate', $manufacturedate);
                 $stmt->bindParam(':expireddate', $expireddate);
                 $stmt->bindParam(':product_id', $id);
@@ -158,7 +212,6 @@ catch (PDOException $exception) {
                     $flag = 1;
                 }
 
-
                 if ($flag == 0) {
                     if ($stmt->execute()) {
                         header("Location:product_success_update_message.php?id=$id");
@@ -176,7 +229,7 @@ catch (PDOException $exception) {
         }
         ?>
 
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post" enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Name</td>
@@ -198,7 +251,17 @@ catch (PDOException $exception) {
                     <td>
                         <p>Product Image</p>
                     </td>
-                    <td><input type="file" name="fileToUpload" class="form-control" id="fileToUpload"><span><?php echo htmlspecialchars($path_img, ENT_QUOTES);  ?></span></td>
+                    <?php 
+                    if ($row['path_img']=="uploads/noimg_product.png"){
+                    ?>
+                    <td><img src="<?php echo htmlspecialchars($path_img, ENT_QUOTES); ?>" style="object-fit: cover;height:100px;width:100px"><input type="file" name="fileToUpload" class="form-control" id="fileToUpload"></td>
+                    <?php 
+                    }else{
+                        ?>
+                         <td><img src="<?php echo htmlspecialchars($path_img, ENT_QUOTES); ?>" style="object-fit: cover;height:100px;width:100px;"><div class='row g-0'><input type="file" name="fileToUpload" class="form-control col me-2" id="fileToUpload"><button type='button' class='btn btn-danger col-2' id="remove" name='remove'>remove</button></div></td>
+                        <?php
+                    }
+                    ?>
                 </tr>
                 <tr>
                     <td>Manufacture Date</td>
@@ -212,9 +275,9 @@ catch (PDOException $exception) {
                     <td></td>
                     <td>
                         <input type='submit' value='Save Changes' class='btn btn-primary' />
-                        <?php
-                        echo "<a href='product_read.php?id=$username' class='btn btn-danger'>Back to read products</a>";
-                        ?>
+                
+                        <a href='product_read.php' class='btn btn-danger'>Back to read products</a>
+                        
                     </td>
                 </tr>
             </table>

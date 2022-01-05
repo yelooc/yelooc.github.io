@@ -1,41 +1,37 @@
 <?php
 include 'session_login.php';
-
 $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
-
 include 'config/database.php';
+include 'nav.php';
 
 try {
 
     $query1 = "SELECT order_details.order_details_id, order_details.order_id, order_details.product_id, order_details.quantity, products.name FROM order_details INNER JOIN products ON order_details.product_id = products.product_id WHERE order_id = :order_id ";
-
     $stmt = $con->prepare($query1);
     $stmt->bindParam(":order_id", $id);
     $stmt->execute();
     $num = $stmt->rowCount();
 
+
     $query2 = "SELECT * FROM order_summary WHERE order_id=$id";
     $stmt1 = $con->prepare($query2);
     $stmt1->execute();
-
     $row = $stmt1->fetch(PDO::FETCH_ASSOC);
     $cus_username = $row['customer_username'];
     $orderID = $row['order_id'];
 
+
     $query = "SELECT * FROM products ORDER BY product_id DESC";
     $stmt2 = $con->prepare($query);
     $stmt2->execute();
-
     $product_arrID = array();
     $product_arrName = array();
 
     while ($row2 = $stmt2->fetch(PDO::FETCH_ASSOC)) {
-
         extract($row2);
         array_push($product_arrID, $row2['product_id']);
         array_push($product_arrName, $row2['name']);
     }
-    
 }
 // show error
 catch (PDOException $exception) {
@@ -48,94 +44,23 @@ catch (PDOException $exception) {
 <html>
 
 <head>
-    <title>Order Update</title>
+    <title>Order ID : <?php echo htmlspecialchars($id, ENT_QUOTES);  ?> (Edit)</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 
 </head>
+
 <body>
 
-    <?php
-    if (filter_var($_SESSION['correct_username'], FILTER_VALIDATE_EMAIL)) {
-        $query = 'SELECT * from customers WHERE email= ?';
-    } else {
-        $query = 'SELECT * FROM customers WHERE username=?';
-    }
-
-    $stmt6 = $con->prepare($query);
-    $stmt6->bindParam(1, $_SESSION['correct_username']);
-    $stmt6->execute();
-    $numCustomer = $stmt6->rowCount();
-
-    if ($numCustomer > 0) {
-        $row = $stmt6->fetch(PDO::FETCH_ASSOC);
-        extract($row);
-    echo "<div class='container-fuild bg-dark'>";
-    echo      "<div class='container'>";
-    echo      "<nav class='navbar-expand-lg py-2'>";
-    echo     "<div class='collapse navbar-collapse d-flex justify-content-between'>";
-    echo          "<ul class='navbar-nav'>";
-    echo          "<li class='nav-item'>";
-    echo "<a class='nav-link text-secondary' href='home.php?id={$username}'>Home</a>";
-    echo "</li>";
-    echo "<li class='nav-item dropdown'>";
-    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
-    echo "Product";
-    echo "</a>";
-    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
-    echo "<li><a class='dropdown-item' href='product_create.php?id={$username}'>Create Product</a></li>";
-    echo "<li><a class='dropdown-item' href='product_read.php?id={$username}'>Product Listing</a></li>";
-    echo "</ul>";
-    echo "</li>";
-    echo "<li class='nav-item dropdown'>";
-    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
-    echo "Customer";
-    echo "</a>";
-    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
-    echo "<li><a class='dropdown-item' href='customer_create.php?id={$username}'>Create Customer</a></li>";
-    echo "<li><a class='dropdown-item' href='customer_read.php?id={$username}'>Customer Listing</a></li>";
-    echo "</ul>";
-    echo "</li>";
-    echo "<li class='nav-item dropdown'>";
-    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
-    echo "Order";
-    echo "</a>";
-    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
-    echo "<li><a class='dropdown-item' href='neworder_create.php?id={$username}'>Create New Order</a></li>";
-    echo "<li><a class='dropdown-item' href='neworder_read.php?id={$username}'>Order Listing</a></li>";
-    echo "</ul>";
-    echo "</li>";
-    echo "<li class='nav-item'>";
-    echo "<a class='nav-link text-secondary' href='contact_us.php?id={$username}'>Contact us</a>";
-    echo "</li>";
-    echo "</ul>";
-    echo "<ul class='navbar-nav'>";
-    echo "<li class='nav-item'>";
-    echo "<a class='nav-link text-secondary' href='customer_update.php?id={$username}'>$username</a>";
-    echo "</li>";
-    echo "<li class='nav-item'>";
-    echo "<a class='nav-link text-secondary' href='session_logout.php?id={$id}'>Log Out</a>";
-    echo "</li>";
-    echo "</ul>";
-    echo "</div>";
-    echo "</nav>";
-    echo "</div>";
-    echo "</div>";
-    }
-    ?>
     <div class="container">
         <div class="page-header">
             <h1>Update Order Details</h1>
         </div>
-
         <?php
 
         if ($_POST) {
 
-            $qdelete = "DELETE FROM order_details WHERE order_id = :order_id";
-            $stmt = $con->prepare($qdelete);
-            $stmt->bindParam(":order_id", $id);
 
             try {
 
@@ -176,6 +101,10 @@ catch (PDOException $exception) {
                 }
 
                 if ($flag == 0) {
+                    $qdelete = "DELETE FROM order_details WHERE order_id = :order_id";
+                    $stmt = $con->prepare($qdelete);
+                    $stmt->bindParam(":order_id", $id);
+
                     if ($stmt->execute()) {
                         for ($count = 0; $count < count($_POST['product']); $count++) {
                             $sql = 'INSERT INTO order_details SET order_id=:order_id, product_id=:product_id, quantity=:quantity';
@@ -219,70 +148,59 @@ catch (PDOException $exception) {
             echo "<th>Quantity</th>";
             echo "<th></th>";
             echo "</tr>";
-
             echo "<table class='table table-hover table-responsive table-bordered' id='order_table'>"; //start table
             $array = array('');
-
+            
+            foreach ($array as $product_row => $product_ID) {
             if ($num > 0) {
-
+                
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
                     extract($row);
+                    $product_list = $_POST ? $_POST['product'] : ' ';
+                    $quantity_list = $_POST ? $_POST['quantity'] : ' ';
                     echo "<tr class='productRow'>";
                     echo "<td class='col-6'><select class='form-control' name='product[]'>";
                     echo "<option value=''>Product List</option>";
-
                     for ($pcount = 0; $pcount < count($product_arrName); $pcount++) {
-                        $product_selected = $product_arrName[$pcount] == $name ? 'selected' : '';
-                        $selected_product = $product_arrID[$pcount] == $product_list[$pcount] ? 'selected' : '';
-                        $result_product = $_POST ? $selected_product : $product_selected;
+                        $pre_selected = $product_arrName[$pcount] == $name ? 'selected' : '';
+                        //error
+                        $post_product = $product_arrID[$pcount] == $product_list[$product_row] ? 'selected' : '';
+
+                        $result_product = $_POST ? $post_product : $pre_selected;
                         echo "<option value='" . $product_arrID[$pcount] . "'$result_product>" . $product_arrName[$pcount] . "</option>";
                     }
                     echo "</select></td>";
                     echo "<td><select class='form-select' name='quantity[]'>";
                     echo "<option value=''>Please Select Your Quantity</option>";
                     for ($quantity = 1; $quantity <= 5; $quantity++) {
-                        $quantity_selected = $row['quantity'] == $quantity ? 'selected' : '';
-                        $selected_quantity = $quantity == $_POST['quantity'][$pcount] ? 'selected' : '';
-                        $result_quantity = $_POST ? $selected_quantity : $quantity_selected;
-                        echo "<option value='$quantity'$result_quantity>$quantity</option>";
+                        $pre_quantity = $row['quantity'] == $quantity ? 'selected' : '';
+                        //error
+                        $post_quantity = $quantity == $quantity_list[$product_row] ? 'selected' : '';
+
+                        $result_quantity = $_POST ? $post_quantity : $pre_quantity;
+                        echo "<option value='$quantity'$pre_quantity>$quantity</option>";
                     }
+
                     echo "</select>";
                     echo "<td class='d-flex justify-content-center'>";
                     echo "<button type='button' class='btn btn-danger' onclick='deleteMe(this)'>X</button>";
                     echo "</td>";
                     echo "</td>";
                     echo "</tr>";
-                   
-                }
-                echo "</table>";
-
-          
-             
-                echo "<div class='d-flex justify-content-between'>";
-                echo "<div>";
-                echo "<button type='button' class='add_one btn btn-primary me-2'>Add More Product</button>";
-                echo "<button type='button' class='delete_one btn btn-danger'>Delete Last Product</button>";
-                echo "</div>";
-                echo "<div>";
-                echo "<input type='submit' value='Save Changes' class='btn btn-primary me-2'/>";
-                if (filter_var($_SESSION['correct_username'], FILTER_VALIDATE_EMAIL)) {
-                    $query = 'SELECT * from customers WHERE email= ?';
-                } else {
-                    $query = 'SELECT * FROM customers WHERE username=?';
-                }
-
-                $stmt = $con->prepare($query);
-                $stmt->bindParam(1, $_SESSION['correct_username']);
-                $stmt->execute();
-                $numCustomer = $stmt->rowCount();
-
-                if ($numCustomer > 0) {
-                    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                    extract($row);
-                echo "<a href='neworder_read.php?id=$username' class='btn btn-danger'>Back to read Order</a>";
                 }
             }
+            }
+            echo "</table>";
+            echo "<div class='d-flex justify-content-between'>";
+            echo "<div>";
+            echo "<button type='button' class='add_one btn btn-primary me-2'>Add More Product</button>";
+            echo "<button type='button' class='delete_one btn btn-danger'>Delete Last Product</button>";
+            echo "</div>";
+            echo "<div>";
+            echo "<input type='submit' value='Save Changes' class='btn btn-primary me-2'/>";
+            echo "<a href='neworder_read.php' class='btn btn-danger'>Back to read Order</a>";
+
             echo "</div>";
             echo "</table>";
             ?>
@@ -310,16 +228,16 @@ catch (PDOException $exception) {
     }, false);
 
     function deleteMe(row) {
-            var table = document.getElementById('order_table')
-            var allrows = table.getElementsByTagName('tr');
-            if (allrows.length == 1) {
-                alert("You are not allowed to delete.");
-            } else {
-                if (confirm("Confirm to delete?")) {
-                    row.parentNode.parentNode.remove();
-                }
+        var table = document.getElementById('order_table')
+        var allrows = table.getElementsByTagName('tr');
+        if (allrows.length == 1) {
+            alert("You are not allowed to delete.");
+        } else {
+            if (confirm("Confirm to delete?")) {
+                row.parentNode.parentNode.remove();
             }
         }
+    }
 </script>
 
 </html>

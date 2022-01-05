@@ -1,20 +1,19 @@
 <?php
 include 'session_login.php';
-
 $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 include 'config/database.php';
-
+include 'nav.php';
 try {
 
-    $query = "SELECT username, path, email, firstname, lastname, gender, date_of_birth, registration_date_and_time,  account_status FROM customers WHERE username = :username";
+    $query = "SELECT path, username, email, firstname, lastname, gender, date_of_birth, registration_date_and_time,  account_status FROM customers WHERE username = :username";
     $stmt = $con->prepare($query);
 
     $stmt->bindParam(":username", $id);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $username = $row['username'];
     $path = $row['path'];
+    $username = $row['username'];
     $firstname = $row['firstname'];
     $lastname = $row['lastname'];
     $email = $row['email'];
@@ -36,72 +35,17 @@ catch (PDOException $exception) {
 <html>
 
 <head>
-    <title>PDO - Read One Record - PHP CRUD Tutorial</title>
+    <title><?php echo htmlspecialchars($username, ENT_QUOTES);  ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
 <body>
-    <?php
-    echo "<div class='container-fuild bg-dark'>";
-    echo      "<div class='container'>";
-    echo      "<nav class='navbar-expand-lg py-2'>";
-    echo     "<div class='collapse navbar-collapse d-flex justify-content-between'>";
-    echo          "<ul class='navbar-nav'>";
-    echo          "<li class='nav-item'>";
-    echo "<a class='nav-link text-secondary' href='home.php?id={$username}'>Home</a>";
-    echo "</li>";
-    echo "<li class='nav-item dropdown'>";
-    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
-    echo "Product";
-    echo "</a>";
-    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
-    echo "<li><a class='dropdown-item' href='product_create.php?id={$username}'>Create Product</a></li>";
-    echo "<li><a class='dropdown-item' href='product_read.php?id={$username}'>Product Listing</a></li>";
-    echo "</ul>";
-    echo "</li>";
-    echo "<li class='nav-item dropdown'>";
-    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
-    echo "Customer";
-    echo "</a>";
-    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
-    echo "<li><a class='dropdown-item' href='customer_create.php?id={$username}'>Create Customer</a></li>";
-    echo "<li><a class='dropdown-item' href='customer_read.php?id={$username}'>Customer Listing</a></li>";
-    echo "</ul>";
-    echo "</li>";
-    echo "<li class='nav-item dropdown'>";
-    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
-    echo "Order";
-    echo "</a>";
-    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
-    echo "<li><a class='dropdown-item' href='neworder_create.php?id={$username}'>Create New Order</a></li>";
-    echo "<li><a class='dropdown-item' href='neworder_read.php?id={$username}'>Order Listing</a></li>";
-    echo "</ul>";
-    echo "</li>";
-    echo "<li class='nav-item'>";
-    echo "<a class='nav-link text-secondary' href='contact_us.php?id={$username}'>Contact us</a>";
-    echo "</li>";
-    echo "</ul>";
-    echo "<ul class='navbar-nav'>";
-    echo "<li class='nav-item'>";
-    echo "<a class='nav-link text-secondary' href='customer_update.php?id={$username}'>$username</a>";
-    echo "</li>";
-    echo "<li class='nav-item'>";
-    echo "<a class='nav-link text-secondary' href='session_logout.php?id={$id}'>Log Out</a>";
-    echo "</li>";
-    echo "</ul>";
-    echo "</div>";
-    echo "</nav>";
-    echo "</div>";
-    echo "</div>";
-
-    ?>
-
     <div class="container">
         <div class="page-header">
-            <h1>Read Customer</h1>
+            <h1><?php echo htmlspecialchars($username, ENT_QUOTES);  ?></h1>
         </div>
         <br>
-        <img src="<?php echo htmlspecialchars($path, ENT_QUOTES); ?>" width="100px">
+        <img src="<?php echo htmlspecialchars($path, ENT_QUOTES); ?>" style='object-fit: cover;height:100px;width:100px;'>
         <br><br>
         <table class='table table-hover table-responsive table-bordered'>
             <tr>
@@ -137,25 +81,9 @@ catch (PDOException $exception) {
                 <td></td>
                 <td>
                     <?php
-
                     echo "<a href='customer_update.php?id=$id' class='btn btn-primary me-2'>Edit</a>";
-                    if (filter_var($_SESSION['correct_username'], FILTER_VALIDATE_EMAIL)) {
-                        $query = 'SELECT * from customers WHERE email= ?';
-                    } else {
-                        $query = 'SELECT * FROM customers WHERE username=?';
-                    }
-
-                    $stmt = $con->prepare($query);
-                    $stmt->bindParam(1, $_SESSION['correct_username']);
-                    $stmt->execute();
-                    $numCustomer = $stmt->rowCount();
-
-                    if ($numCustomer > 0) {
-                        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                        extract($row);
-                        echo "<a href='customer_read.php?id=$username' class='btn btn-danger'>Back to read customers</a>";
-                    }
                     ?>
+                    <a href='customer_read.php' class='btn btn-danger'>Back to read customers</a>
                 </td>
             </tr>
         </table>

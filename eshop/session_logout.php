@@ -8,6 +8,6 @@ session_unset();
 // destroy the session 
 session_destroy();
 
-header('Location:login.php?msg=logout');
+header('Location:index.php?msg=logout');
 
 ?>

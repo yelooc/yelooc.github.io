@@ -4,13 +4,14 @@ include 'session_login.php';
 $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 
 include 'config/database.php';
+include 'nav.php';
 ?>
 
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <title>Order Read One</title>
+    <title>Order ID : <?php echo htmlspecialchars($id, ENT_QUOTES);  ?></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
@@ -18,9 +19,6 @@ include 'config/database.php';
 </head>
 
 <body>
-<?php
-   include 'nav.php';
-    ?>
 
     <div class="container">
         <div class="page-header">
@@ -96,7 +94,7 @@ include 'config/database.php';
             echo "<td></td>";
             echo "<td></td>";
             echo "<td class='text-center'><a href='neworder_update.php?id={$id}' class='btn btn-primary me-3'>Edit</a>";
-            echo "<a href='neworder_read.php?id=$username' class='btn btn-danger'>Back to read Order</a></td>";
+            echo "<a href='neworder_read.php' class='btn btn-danger'>Back to read Order</a></td>";
             echo "</tr>";
 
             echo "</table>";

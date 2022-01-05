@@ -1,8 +1,5 @@
 <?php
 include 'session_login.php';
-
-$id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
-
 include 'config/database.php';
 
 ?>
@@ -20,7 +17,7 @@ include 'config/database.php';
 
         <h5>Customer Create SuccessFully</h5>
         <?php
-        echo "<a href='customer_read.php?id=$id'><button class='btn btn-primary'>OK</button></a>"
+        echo "<a href='customer_read.php'><button class='btn btn-primary'>OK</button></a>"
         ?>
       
     </div>

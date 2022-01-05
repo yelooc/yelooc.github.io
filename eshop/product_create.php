@@ -1,16 +1,13 @@
 <?php
 include 'session_login.php';
-
-$id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 include 'config/database.php';
-
 include 'nav.php';
 ?>
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <title>Eshop Customer Create to insert the data in database(PDO Method)</title>
+    <title>Product Create</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
@@ -36,20 +33,47 @@ include 'nav.php';
 
         if ($_POST) {
 
-            $target_dir = "uploads/";
-            // if (!empty($target_file)) {
-            //     $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-            //     $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-            // } else {
-            //     $target_file = "uploads/noimg_product.png";
-            //     $check = getimagesize("uploads/noimg_product.png");
-            // }
-            $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-                $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-            $isUploadOK = 1;
-            $isUploadOKs = true;
-            $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+            if (!empty($_FILES['fileToUpload']['name'])) {
 
+                $query_img = 'SELECT * FROM products ORDER BY product_id DESC LIMIT 1';
+        $stmt_img = $con->prepare($query_img);
+        $stmt_img->execute();
+        $row2 = $stmt_img->fetch(PDO::FETCH_ASSOC);
+
+                $target_dir = "uploads/".$row2['product_id'];
+                $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+                $isUploadOK = TRUE;
+                $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+                $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+
+                if ($check !== false) {
+                    $isUploadOK = TRUE;
+                } else {
+                    $flag = 1;
+                    $message .= "File is not an image.<br>";
+                    $isUploadOK = FALSE;
+                }
+
+                if ($_FILES["fileToUpload"]["size"] > 5000000) {
+                    $flag = 1;
+                    $message .= "Sorry, your file is too large.<br>";
+                    $isUploadOK = FALSE;
+                }
+                // Allow certain file formats
+                if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+                    $flag = 1;
+                    $message .= "Sorry, only JPG, JPEG, PNG & GIF files are allowed.<br>";
+                    $isUploadOK = FALSE;
+                }
+
+                if ($isUploadOK == TRUE) {
+                    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+                        header("Location:product_success_create_message.php");
+                    }
+                }
+            } else {
+                $target_file = "uploads/noimg_product.png";
+            }
 
             try {
 
@@ -174,37 +198,10 @@ include 'nav.php';
                     $flag = 1;
                 }
 
-                if ($check !== false) {
-                    $isUploadOK = 1;
-                } else {
-                    $message = "File is not an image.";
-                    $isUploadOK = 0;
-                }
-
-                // if ($num > 0) {
-                //     while ($row = $stmt_product->fetch(PDO::FETCH_ASSOC)) {
-                //         if ($row['path_img'] == $target_file) {
-                //             $message = "Sorry, your Image's name is exit already.";
-                //             $isUploadOKs = false;
-                //         }
-                //     }
-                // }
-
-                // Check file size
-                if ($_FILES["fileToUpload"]["size"] > 5000000) {
-                    $message = " Sorry, your file is too large.";
-                    $isUploadOKs = false;
-                }
-                // Allow certain file formats
-                if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
-                    $message = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-                    $isUploadOKs = false;
-                }
-
-                if ($flag == 0 && $isUploadOKs == true && $isUploadOK == 1) {
-                    if ($stmt->execute() && move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+                if ($flag == 0) {
+                    if ($stmt->execute()) {
                         // echo "<script>alert('Successfully');</script>"; 
-                        header("Location:product_success_create_message.php?id={$id}");
+                        header("Location:product_success_create_message.php");
                     }
                 } else {
                     echo "<div class='alert alert-danger'>";
@@ -220,7 +217,7 @@ include 'nav.php';
 
         ?>
 
-        <form action="<?php echo $_SERVER["PHP_SELF"] . "?id={$id}" ?>" method="POST" enctype="multipart/form-data">
+        <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="POST" enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Name</td>
@@ -283,22 +280,7 @@ include 'nav.php';
                     <td>
                         <input type='submit' value='Save' class='btn btn-primary' />
                         <?php
-                        if (filter_var($_SESSION['correct_username'], FILTER_VALIDATE_EMAIL)) {
-                            $query = 'SELECT * from customers WHERE email= ?';
-                        } else {
-                            $query = 'SELECT * FROM customers WHERE username=?';
-                        }
-
-                        $stmt = $con->prepare($query);
-                        $stmt->bindParam(1, $_SESSION['correct_username']);
-                        $stmt->execute();
-                        $numCustomer = $stmt->rowCount();
-
-                        if ($numCustomer > 0) {
-                            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                            extract($row);
-                            echo "<a href='product_read.php?id={$username}' class='btn btn-danger'>Back to read products</a>";
-                        }
+                        echo "<a href='product_read.php' class='btn btn-danger'>Back to read products</a>";
                         ?>
                     </td>
                 </tr>

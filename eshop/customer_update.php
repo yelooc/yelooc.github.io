@@ -1,21 +1,20 @@
 <?php
 include 'session_login.php';
-
 $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
-
 include 'config/database.php';
+include 'nav.php';
 
 try {
 
-    $query = "SELECT username, path, email, firstname, lastname, gender, date_of_birth, account_status, password FROM customers WHERE username = :username";
+    $query = "SELECT path, username, email, firstname, lastname, gender, date_of_birth, account_status, password FROM customers WHERE username = :username";
     $stmt = $con->prepare($query);
 
     $stmt->bindParam(":username", $id);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $username = $row['username'];
     $path = $row['path'];
+    $username = $row['username'];
     $firstname = $row['firstname'];
     $lastname = $row['lastname'];
     $email = $row['email'];
@@ -37,66 +36,18 @@ catch (PDOException $exception) {
 <html>
 
 <head>
-    <title>PDO - Customer Update - PHP CRUD Tutorial</title>
+    <title><?php echo htmlspecialchars($username, ENT_QUOTES);  ?> (Edit)</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("#remove").click(function(){
+    $("img").attr("src", "uploads/noimg_customer.png");
+  });
+});
+</script>
 <body>
-    <?php
-
-    echo "<div class='container-fuild bg-dark'>";
-    echo      "<div class='container'>";
-    echo      "<nav class='navbar-expand-lg py-2'>";
-    echo     "<div class='collapse navbar-collapse d-flex justify-content-between'>";
-    echo          "<ul class='navbar-nav'>";
-    echo          "<li class='nav-item'>";
-    echo "<a class='nav-link text-secondary' href='home.php?id={$username}'>Home</a>";
-    echo "</li>";
-    echo "<li class='nav-item dropdown'>";
-    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
-    echo "Product";
-    echo "</a>";
-    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
-    echo "<li><a class='dropdown-item' href='product_create.php?id={$username}'>Create Product</a></li>";
-    echo "<li><a class='dropdown-item' href='product_read.php?id={$username}'>Product Listing</a></li>";
-    echo "</ul>";
-    echo "</li>";
-    echo "<li class='nav-item dropdown'>";
-    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
-    echo "Customer";
-    echo "</a>";
-    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
-    echo "<li><a class='dropdown-item' href='customer_create.php?id={$username}'>Create Customer</a></li>";
-    echo "<li><a class='dropdown-item' href='customer_read.php?id={$username}'>Customer Listing</a></li>";
-    echo "</ul>";
-    echo "</li>";
-    echo "<li class='nav-item dropdown'>";
-    echo "<a class='nav-link dropdown-toggle text-secondary' href='#' role='button' data-bs-toggle='dropdown'>";
-    echo "Order";
-    echo "</a>";
-    echo "<ul class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>";
-    echo "<li><a class='dropdown-item' href='neworder_create.php?id={$username}'>Create New Order</a></li>";
-    echo "<li><a class='dropdown-item' href='neworder_read.php?id={$username}'>Order Listing</a></li>";
-    echo "</ul>";
-    echo "</li>";
-    echo "<li class='nav-item'>";
-    echo "<a class='nav-link text-secondary' href='contact_us.php?id={$username}'>Contact us</a>";
-    echo "</li>";
-    echo "</ul>";
-    echo "<ul class='navbar-nav'>";
-    echo "<li class='nav-item'>";
-    echo "<a class='nav-link text-secondary' href='customer_update.php?id={$username}'>$username</a>";
-    echo "</li>";
-    echo "<li class='nav-item'>";
-    echo "<a class='nav-link text-secondary' href='session_logout.php?id={$id}'>Log Out</a>";
-    echo "</li>";
-    echo "</ul>";
-    echo "</div>";
-    echo "</nav>";
-    echo "</div>";
-    echo "</div>";
-
-    ?>
 
     <div class="container">
         <div class="page-header">
@@ -106,14 +57,64 @@ catch (PDOException $exception) {
         <?php
 
         if ($_POST) {
+
+            if (!empty($_FILES['fileToUpload']['name'])) {
+                if ("uploads/".$_FILES['fileToUpload']['name']!=$row['path']) {
+    
+                    $target_dir = "uploads/";
+                    if($row['path']!='uploads/noimg_customer.png'){
+                        unlink($row['path']);
+                    }
+                    $target_dir = "uploads/".$row['username'];
+                    $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+                    $isUploadOK = TRUE;
+                    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+                    $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+    
+                    if ($check !== false) {
+                        $isUploadOK = TRUE;
+                    } else {
+                        $flag = 1;
+                        $message .= "File is not an image.<br>";
+                        $isUploadOK = FALSE;
+                    }
+    
+                    if ($_FILES["fileToUpload"]["size"] > 5000000) {
+                        $flag = 1;
+                        $message .= "Sorry, your file is too large.<br>";
+                        $isUploadOK = FALSE;
+                    }
+                    // Allow certain file formats
+                    if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+                        $flag = 1;
+                        $message .= "Sorry, only JPG, JPEG, PNG & GIF files are allowed.<br>";
+                        $isUploadOK = FALSE;
+                    }
+    
+                    if ($isUploadOK == TRUE) {
+                        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+                            header("Location:customer_success_create_message.php");
+                        }
+                    }
+                }
+            }else{
+                $target_file = $row['path'];
+                }
+    
+                // if (isset($_POST['remove'])){
+                //     unlink($row['path_img']);
+                //     $target_file = 'uploads/noimg_product.png';
+                // }
+
             try {
 
                 $query = "UPDATE customers
-                  SET username=:username, firstname=:firstname,
+                  SET path=:path, username=:username, firstname=:firstname,
                   lastname=:lastname, email=:email, gender=:gender, date_of_birth=:date_of_birth, password=:new_password, account_status=:account_status WHERE username = :username";
 
                 $stmt = $con->prepare($query);
 
+                $path = $target_file;
                 $username = htmlspecialchars(strip_tags($_POST['username']));
                 $firstname = htmlspecialchars(strip_tags($_POST['firstname']));
                 $lastname = htmlspecialchars(strip_tags($_POST['lastname']));
@@ -124,6 +125,7 @@ catch (PDOException $exception) {
                 $account_status = htmlspecialchars(strip_tags($_POST['account_status']));
 
                 $stmt->bindParam(':username', $id);
+                $stmt->bindParam(':path', $path);
                 $stmt->bindParam(':firstname', $firstname);
                 $stmt->bindParam(':lastname', $lastname);
                 $stmt->bindParam(':email', $email);
@@ -235,17 +237,27 @@ catch (PDOException $exception) {
         }
         ?>
 
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post" enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
-                <tr>
-                    <td>Username</td>
-                    <td><input type="text" class='form-control' name='username' value="<?php echo htmlspecialchars($username, ENT_QUOTES);  ?>" READONLY></td>
-                </tr>
-                <tr>
+            <tr>
                     <td>
                         <p>Customer Image</p>
                     </td>
-                    <td><input type="file" name="fileToUpload" class="form-control" id="fileToUpload"><span><?php echo htmlspecialchars($path, ENT_QUOTES);  ?></span></td>
+                    <?php 
+                    if ($row['path']=="uploads/noimg_customer.png"){
+                    ?>
+                    <td><img src="<?php echo htmlspecialchars($path, ENT_QUOTES); ?>" style="object-fit: cover;height:100px;width:100px"><input type="file" name="fileToUpload" class="form-control" id="fileToUpload"></td>
+                    <?php 
+                    }else{
+                        ?>
+                         <td><img src="<?php echo htmlspecialchars($path, ENT_QUOTES); ?>" style="object-fit: cover;height:100px;width:100px;"><div class='row g-0'><input type="file" name="fileToUpload" class="form-control col me-2" id="fileToUpload"><button type='button' class='btn btn-danger col-2' id="remove" name='remove'>remove</button></div></td>
+                        <?php
+                    }
+                    ?>
+                </tr>
+                <tr>
+                    <td>Username</td>
+                    <td><input type="text" class='form-control' name='username' value="<?php echo htmlspecialchars($username, ENT_QUOTES);  ?>" READONLY></td>
                 </tr>
                 <tr>
                     <td>First Name</td>
@@ -319,9 +331,7 @@ catch (PDOException $exception) {
                     <td></td>
                     <td>
                         <input type='submit' value='Save Changes' class='btn btn-primary' />
-                        <?php
-                        echo "<a href='customer_read.php?id=$username' class='btn btn-danger'>Back to read customers</a>";
-                        ?>
+                        <a href='customer_read.php' class='btn btn-danger'>Back to read customers</a> 
                     </td>
                 </tr>
             </table>

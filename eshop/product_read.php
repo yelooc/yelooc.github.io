@@ -1,9 +1,6 @@
 <?php
 include 'session_login.php';
-
-$id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 include 'config/database.php';
-
 include 'nav.php';
 
 $tableContent = '';
@@ -23,10 +20,11 @@ $num = $stmt->rowCount();
 $table = $stmt->fetchAll();
 
 foreach ($table as $row) {
+    extract($row);
     $price = !preg_match("/[.]/", $row['price']) ? $row['price'] . ".00" : $row['price'];
     $tableContent = $tableContent . "<tr>" .
         "<td>" . $row['product_id'] . "</td>"
-        . "<td class='text-center'><img src='" . $row['path_img'] . "' width='100px'></td>"
+        . "<td class='text-center'><img src='" . $row['path_img'] . "' style='object-fit: cover;height:100px;width:100px;'></td>"
         . "<td>" . $row['name'] . "</td>"
         . "<td>" . $row['description'] . "</td>"
         . "<td>" . $row['category_name'] . "</td>"
@@ -34,7 +32,7 @@ foreach ($table as $row) {
         . "<td class='d-flex justify-content-between'>"
         . "<a href='product_read_one.php?id={$row['product_id']}' class='btn btn-info'>Read</a>"
         . "<a href='product_update.php?id={$row['product_id']}' class='btn btn-primary'>Edit</a>"
-        . "<a href='product_delete.php?id={$row['product_id']}'  class='btn btn-danger'>Delete</a>"
+        . "<button onclick='myFunction_category({$product_id})' class='btn btn-danger'>Delete</button>"
         . "</td></tr>";
 }
 
@@ -44,12 +42,12 @@ if (isset($_POST['filter'])) {
     $tableContent = '';
 
     if ($category_option != "all_category") {
-        $selectstmt = $con->prepare('SELECT categorys.category_name, products.product_id, products.path, products.name, products.description, products.price
+        $selectstmt = $con->prepare('SELECT categorys.category_name, products.product_id, products.path_img, products.name, products.description, products.price
         FROM categorys
         INNER JOIN products ON products.category_id = categorys.id WHERE category_id=:category_id ORDER BY product_id DESC');
         $selectstmt->bindParam(":category_id", $category_option);
     } else {
-        $selectstmt = $con->prepare('SELECT categorys.category_name, products.product_id, products.path, products.name, products.description, products.price
+        $selectstmt = $con->prepare('SELECT categorys.category_name, products.product_id, products.path_img, products.name, products.description, products.price
         FROM categorys
         INNER JOIN products ON products.category_id = categorys.id ORDER BY product_id DESC');
     }
@@ -59,11 +57,12 @@ if (isset($_POST['filter'])) {
     $table = $selectstmt->fetchAll();
 
     foreach ($table as $row) {
+        extract($row);
         $price = !preg_match("/[.]/", $row['price']) ? $row['price'] . ".00" : $row['price'];
         $category_header = $category_option == "all_category" ? "<td>" . $row['category_name'] . "</td>" : "";
         $tableContent = $tableContent . "<tr>" .
             "<td>" . $row['product_id'] . "</td>"
-            . "<td class='text-center'><img src='" . $row['path_img'] . "' width='100px'></td>"
+            . "<td class='text-center'><img src='" . $row['path_img'] . "' style='object-fit: cover;height:100px;width:100px;'></td>"
             . "<td>" . $row['name'] . "</td>"
             . "<td>" . $row['description'] . "</td>"
             . $category_header
@@ -71,7 +70,7 @@ if (isset($_POST['filter'])) {
             . "<td class='d-flex justify-content-between'>"
             . "<a href='product_read_one.php?id={$row['product_id']}' class='btn btn-info'>Read</a>"
             . "<a href='product_update.php?id={$row['product_id']}' class='btn btn-primary'>Edit</a>"
-            . "<a href='product_delete.php?id={$row['product_id']}'  class='btn btn-danger'>Delete</a>"
+            . "<button onclick='myFunction_category({$product_id})' class='btn btn-danger'>Delete</button>"
             . "</td></tr>";
     }
 }
@@ -81,7 +80,7 @@ if (isset($_POST['filter'])) {
 <html>
 
 <head>
-    <title>PDO - Product Read - PHP CRUD Tutorial</title>
+    <title>Product Read</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
@@ -96,13 +95,13 @@ if (isset($_POST['filter'])) {
         <div class="row g-0">
 
             <div class="col">
-                <?php
-                echo "<a href='product_create.php?id={$id}' class='btn-sm btn btn-primary'>Create New Product</a>";
-                ?>
+                
+                <a href='product_create.php' class='btn-sm btn btn-primary'>Create New Product</a>
+                
             </div>
 
             <div class="col d-flex justify-content-center">
-                <form action="<?php echo $_SERVER["PHP_SELF"] . "?id={$username}" ?>" method="POST">
+                <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="POST">
                     <select class="rounded" name="category">
                         <option value="all_category">--ALL Category--</option>
                         <?php
@@ -118,7 +117,7 @@ if (isset($_POST['filter'])) {
             </div>
 
             <div class="col d-flex justify-content-end">
-                <form action="<?php echo $_SERVER["PHP_SELF"] . "?id={$username}" ?>" method="POST">
+                <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="POST">
                     <input name="keyword" type="search" placeholder="Search..." value="<?php echo isset($_POST['keyword']) ? $_POST['keyword'] : '' ?>" />
                     <button type="submit" class="btn-sm btn btn-primary" name="search">Search</button>
                 </form>
@@ -150,7 +149,7 @@ if (isset($_POST['filter'])) {
                 echo $tableContent;
             } else {
                 $keyword = $_POST['keyword'];
-                $query = $con->prepare("SELECT categorys.category_name, products.product_id, products.path, products.name, products.description, products.price
+                $query = $con->prepare("SELECT categorys.category_name, products.product_id, products.path_img, products.name, products.description, products.price
                 FROM categorys
                 INNER JOIN products ON products.category_id = categorys.id WHERE name LIKE '%$keyword%' ORDER BY product_id DESC");
                 $query->execute();
@@ -158,10 +157,11 @@ if (isset($_POST['filter'])) {
                 if ($query->fetch(PDO::FETCH_ASSOC)) {
                     $query->execute();
                     while ($row = $query->fetch()) {
+                        extract($row);
                         $price = !preg_match("/[.]/", $row['price']) ? $row['price'] . ".00" : $row['price'];
                         echo "</tr>";
                         echo "<td>" . $row['product_id'] . "</td>";
-                        echo "<td class='text-center'><img src='" . $row['path_img'] . "' width='100px'></td>";
+                        echo "<td class='text-center'><img src='" . $row['path_img'] . "' style='object-fit: cover;height:100px;width:100px;'></td>";
                         echo "<td>" . $row['name'] . "</td>";
                         echo "<td>" . $row['description'] . "</td>";
                         echo "<td>" . $row['category_name'] . "</td>";
@@ -169,7 +169,7 @@ if (isset($_POST['filter'])) {
                         echo "<td class='d-flex justify-content-between'>";
                         echo "<a href='product_read_one.php?id={$row['product_id']}' class='btn btn-info'>Read</a>";
                         echo "<a href='product_update.php?id={$row['product_id']}' class='btn btn-primary'>Edit</a>";
-                        echo "<a href='product_delete.php?id={$row['product_id']}'  class='btn btn-danger'>Delete</a>";
+                        echo "<button onclick='myFunction_category({$product_id})' class='btn btn-danger'>Delete</button>";
                         echo "</td></tr>";
                     }
                 } else {
@@ -184,5 +184,15 @@ if (isset($_POST['filter'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 
 </body>
+<script>
+function myFunction_category(product_id) {
+    
+    let text = "Do you sure want ot delete?";
+    if (confirm(text) == true) {
+        window.location = "product_delete.php?id=" +product_id;
+    }else{
 
+    }
+}
+</script>
 </html>
