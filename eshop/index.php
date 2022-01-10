@@ -10,7 +10,6 @@
 <style>
     body {
         margin: 100px;
-        font-size: 12px;
     }
 </style>
 
@@ -46,16 +45,16 @@
             $stmt->bindParam(1, $username);
             $stmt->execute();
             $num = $stmt->rowCount();
-            
+
             if ($num > 0) {
-                
+
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
                 extract($row);
-             
+
                 if ($_POST['password'] == $row['password']) {
                     if ($row['account_status'] == 'active') {
                         $_SESSION["correct_username"] = $_POST['username'];
-                        
+
                         header("Location:home.php");
                     } else {
                         $flag = 1;
@@ -76,20 +75,27 @@
     <div class="d-flex justify-content-center">
         <form action="" class="col-3" method="POST">
             <img src="img\sign_in_ui_logo.png" class="mb-3" width="60px" alt="logo">
-            <p class="mb-3 fs-5">Please sign in</p>
+            <p class="mb-3 fs-6">Please sign in</p>
             <?php
-            if (isset($_GET['msg']) && $_GET['msg']=='logout') {
-                echo "<div class='alert alert-success'>Log Out Succesful</div>";
-               }
-               if (isset($_GET['msg']) && $_GET['msg']=='pleaselogin'){
-                $flag = 1;
-                $message .= '<br>Please login first, then can access to next page.';
-               }
-            if (isset($flag) && $flag == 1) {
-                echo "<div class='alert alert-danger'>";
-                echo $message;
-                echo "</div>";
+            $message1 = '';
+            if (isset($_GET['msg']) && $_GET['msg'] == 'signup_success') {
+                echo "<div class='alert alert-success'>Sign Up Succesfully</div>";
             }
+            if (isset($_GET['msg']) && $_GET['msg'] == 'logout') {
+                echo "<div class='alert alert-success'>Log Out Succesfully</div>";
+            }
+            if (isset($_GET['msg']) && $_GET['msg'] == 'pleaselogin') {
+                echo "<div class='alert alert-danger'>Please login first, then can access to next page.</div>";
+            }
+
+            if (isset($_POST['submit'])){
+                if (isset($flag) && $flag == 1) {
+                    echo "<div class='alert alert-danger'>";
+                    echo $message;
+                    echo "</div>";
+                }
+            }
+             
             ?>
 
             <div class="form-floating">

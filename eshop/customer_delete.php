@@ -6,35 +6,23 @@ $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 include 'config/database.php';
 
 try {
+    $query1 = "SELECT customers.username, order_summary.customer_username FROM customers INNER JOIN order_summary ON customers.username = order_summary.customer_username WHERE username = :username";
+    $stmt = $con->prepare($query1);
+    $stmt->bindParam(":username", $id);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $num = $stmt->rowCount();
 
-    $qdelete = "DELETE FROM customers WHERE username = :username";
-
-            $stmt = $con->prepare($qdelete);
-            $stmt->bindParam(":username", $id);
-            $stmt->execute();
-            
-}
-
-catch (PDOException $exception) {
+    if ($num > 0) {
+        echo "<script>alert('The Customer that Order is using');</script>";
+        echo "<script>window.location.assign('customer_read.php')</script>";
+    } else {
+        $qdelete = "DELETE FROM customers WHERE username = :username";
+        $stmt = $con->prepare($qdelete);
+        $stmt->bindParam(":username", $id);
+        $stmt->execute();
+        header("Location:customer_read.php?msg=delete");
+    }
+} catch (PDOException $exception) {
     die('ERROR: ' . $exception->getMessage());
 }
-?>
-<!DOCTYPE HTML>
-<html>
-<head>
-    <title>Customer Delete SuccessFully</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-</head>
-<body>
-    <div class="text-center border border-secondary p-5" style="margin:200px">
-
-        <h5>Customer Delete SuccessFully</h5>
-        <div>Customer's Username is : <?php echo htmlspecialchars($id, ENT_QUOTES);  ?><br>
-        <?php
-        echo "<a href='customer_read.php'><button class='btn btn-primary'>OK</button></a>"
-        ?>
-      
-    </div>
-</body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-</html>

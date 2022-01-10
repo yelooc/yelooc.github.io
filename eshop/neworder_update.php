@@ -6,22 +6,25 @@ include 'nav.php';
 
 try {
 
-    $query1 = "SELECT order_details.order_details_id, order_details.order_id, order_details.product_id, order_details.quantity, products.name FROM order_details INNER JOIN products ON order_details.product_id = products.product_id WHERE order_id = :order_id ";
+    $query1 = "SELECT order_details.order_details_id, order_details.order_id, order_details.product_id, order_details.quantity, products.name FROM order_details INNER JOIN products ON order_details.product_id = products.p_id WHERE order_id = :order_id ";
     $stmt = $con->prepare($query1);
     $stmt->bindParam(":order_id", $id);
     $stmt->execute();
     $num = $stmt->rowCount();
 
-
-    $query2 = "SELECT * FROM order_summary WHERE order_id=$id";
+    $query2 = "SELECT order_summary.customer_username, order_summary.order_id, order_summary.purchase_date, customers.lastname, customers.firstname, customers.email FROM order_summary INNER JOIN customers ON order_summary.customer_username = customers.username WHERE order_id=$id";
     $stmt1 = $con->prepare($query2);
     $stmt1->execute();
     $row = $stmt1->fetch(PDO::FETCH_ASSOC);
     $cus_username = $row['customer_username'];
     $orderID = $row['order_id'];
+    $purchase_date = $row['purchase_date'];
+    $firstname = $row['firstname'];
+    $lastname = $row['lastname'];
+    $email = $row['email'];
 
 
-    $query = "SELECT * FROM products ORDER BY product_id DESC";
+    $query = "SELECT * FROM products ORDER BY p_id DESC";
     $stmt2 = $con->prepare($query);
     $stmt2->execute();
     $product_arrID = array();
@@ -29,7 +32,7 @@ try {
 
     while ($row2 = $stmt2->fetch(PDO::FETCH_ASSOC)) {
         extract($row2);
-        array_push($product_arrID, $row2['product_id']);
+        array_push($product_arrID, $row2['p_id']);
         array_push($product_arrName, $row2['name']);
     }
 }
@@ -58,10 +61,7 @@ catch (PDOException $exception) {
             <h1>Update Order Details</h1>
         </div>
         <?php
-
         if ($_POST) {
-
-
             try {
 
                 $flag = 0;
@@ -115,7 +115,7 @@ catch (PDOException $exception) {
 
                             if (!empty($_POST['product'][$count]) && !empty($_POST['quantity'][$count])) {
                                 $stmt->execute();
-                                header("Location:neworder_success_update_message.php?id=$id");
+                                header("Location:neworder_read_one.php?id=$id&msg=orderUpdate_success");
                             }
                         }
                     } else {
@@ -135,61 +135,97 @@ catch (PDOException $exception) {
 
         <?php
         echo "<br><h6>Order ID : $orderID</h6>";
-        echo "<br><h6>Customer's Username : $cus_username</h6>";
+        echo "<h6>Customer's Username : $cus_username</h6>";
+        echo "<h6>Name : $firstname $lastname</h6>";
+        echo "<h6>Email : $email</h6>";
+        echo "<h6>Purchase Date : $purchase_date</h6>";
         ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post">
             <?php
-
             echo "<table class='table table-hover table-responsive table-bordered m-0'"; //start table
-
             echo "<tr>";
             echo "<th class='col-6'>Product Name</th>";
             echo "<th>Quantity</th>";
             echo "<th></th>";
             echo "</tr>";
-            echo "<table class='table table-hover table-responsive table-bordered' id='order_table'>"; //start table
-            $array = array('');
-            
-            foreach ($array as $product_row => $product_ID) {
             if ($num > 0) {
-                
-                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-
-                    extract($row);
-                    $product_list = $_POST ? $_POST['product'] : ' ';
-                    $quantity_list = $_POST ? $_POST['quantity'] : ' ';
-                    echo "<tr class='productRow'>";
-                    echo "<td class='col-6'><select class='form-control' name='product[]'>";
-                    echo "<option value=''>Product List</option>";
-                    for ($pcount = 0; $pcount < count($product_arrName); $pcount++) {
-                        $pre_selected = $product_arrName[$pcount] == $name ? 'selected' : '';
-                        //error
-                        $post_product = $product_arrID[$pcount] == $product_list[$product_row] ? 'selected' : '';
-
-                        $result_product = $_POST ? $post_product : $pre_selected;
-                        echo "<option value='" . $product_arrID[$pcount] . "'$result_product>" . $product_arrName[$pcount] . "</option>";
+                $array = array('');
+                if ($_POST) {
+                    for ($y = 0; $y <= count($_POST['product']); $y++) {
+                        if (empty($_POST['product'][$y]) && empty($_POST['quantity'][$y])) {
+    
+                            unset($_POST['product'][$y]);
+                            unset($_POST['quantity'][$y]);
+                        }
+                        if (count($_POST['product']) != count(array_unique($_POST['product']))) {
+    
+                            unset($_POST['product'][$y]);
+                            unset($_POST['quantity'][$y]);
+                        }
                     }
-                    echo "</select></td>";
-                    echo "<td><select class='form-select' name='quantity[]'>";
-                    echo "<option value=''>Please Select Your Quantity</option>";
-                    for ($quantity = 1; $quantity <= 5; $quantity++) {
-                        $pre_quantity = $row['quantity'] == $quantity ? 'selected' : '';
-                        //error
-                        $post_quantity = $quantity == $quantity_list[$product_row] ? 'selected' : '';
-
-                        $result_quantity = $_POST ? $post_quantity : $pre_quantity;
-                        echo "<option value='$quantity'$pre_quantity>$quantity</option>";
+                    if (count($_POST['product']) == 0) {
+                        $array = array('');
+                    } else {
+                        $array = $_POST['product'];
                     }
-
-                    echo "</select>";
-                    echo "<td class='d-flex justify-content-center'>";
-                    echo "<button type='button' class='btn btn-danger' onclick='deleteMe(this)'>X</button>";
-                    echo "</td>";
-                    echo "</td>";
-                    echo "</tr>";
                 }
-            }
+                echo "<table class='table table-hover table-responsive table-bordered' id='order_table'>"; //start table
+                if (!$_POST) {
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        foreach ($array as $product_row => $product_ID) {
+                            extract($row);
+                            $product_list = '';
+                            echo "<tr class='productRow'>";
+                            echo "<td class='col-6'><select class='form-control' name='product[]'>";
+                            echo "<option value=''>Product List</option>";
+                            for ($pcount = 0; $pcount < count($product_arrID); $pcount++) {
+                                $product_selected = $product_arrID[$pcount] == $row['product_id'] ? 'selected' : '';
+                                echo "<option value='" . $product_arrID[$pcount] . "'$product_selected>" . $product_arrName[$pcount] . "</option>";
+                            }
+                            echo "</select></td>";
+                            echo "<td><select class='form-select' name='quantity[]'>";
+                            echo "<option value=''>Please Select Your Quantity</option>";
+                            for ($quantity = 1; $quantity <= 5; $quantity++) {
+                                $quantity_selected = $row['quantity'] == $quantity ? 'selected' : '';
+                                echo "<option value='$quantity'$quantity_selected>$quantity</option>";
+                            }
+
+                            echo "</select>";
+                            echo "<td class='d-flex justify-content-center'>";
+                            echo "<button type='button' class='btn btn-danger' onclick='deleteMe(this)'>X</button>";
+                            echo "</td>";
+                            echo "</td>";
+                            echo "</tr>";
+                        }
+                    }
+                } else {
+                    foreach ($array as $product_row => $product_ID) {
+                        extract($row);
+                        $product_list = $_POST['product'];
+                        echo "<tr class='productRow'>";
+                        echo "<td class='col-6'><select class='form-control' name='product[]'>";
+                        echo "<option value=''>Product List</option>";
+                        for ($pcount = 0; $pcount < count($product_arrID); $pcount++) {
+                            $product_selected = $product_arrID[$pcount] == $product_list[$product_row] ? 'selected' : '';
+                            echo "<option value='" . $product_arrID[$pcount] . "'$product_selected>" . $product_arrName[$pcount] . "</option>";
+                        }
+                        echo "</select></td>";
+                        echo "<td><select class='form-select' name='quantity[]'>";
+                        echo "<option value=''>Please Select Your Quantity</option>";
+                        for ($quantity = 1; $quantity <= 5; $quantity++) {
+                            $quantity_selected = $quantity == $_POST['quantity'][$product_row] ? 'selected' : '';
+                            echo "<option value='$quantity'$quantity_selected>$quantity</option>";
+                        }
+
+                        echo "</select>";
+                        echo "<td class='d-flex justify-content-center'>";
+                        echo "<button type='button' class='btn btn-danger' onclick='deleteMe(this)'>X</button>";
+                        echo "</td>";
+                        echo "</td>";
+                        echo "</tr>";
+                    }
+                }
             }
             echo "</table>";
             echo "<div class='d-flex justify-content-between'>";
@@ -199,7 +235,7 @@ catch (PDOException $exception) {
             echo "</div>";
             echo "<div>";
             echo "<input type='submit' value='Save Changes' class='btn btn-primary me-2'/>";
-            echo "<a href='neworder_read.php' class='btn btn-danger'>Back to read Order</a>";
+            echo "<a href='neworder_read.php' class='btn btn-danger'>Back to Order Listing</a>";
 
             echo "</div>";
             echo "</table>";
@@ -223,6 +259,8 @@ catch (PDOException $exception) {
             if (total > 1) {
                 var element = document.querySelector('.productRow');
                 element.remove(element);
+            } else {
+                alert("You are not allowed to delete.");
             }
         }
     }, false);

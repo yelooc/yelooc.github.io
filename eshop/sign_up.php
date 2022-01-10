@@ -1,14 +1,14 @@
 <!--ID : 2030346 -->
 <!--Name : NG WING Chun -->
 <!--Topic : Eshop Customer Create to insert the data in database(PDO Method)-->
-<?php 
+<?php
 include 'config/database.php';
 ?>
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <title>Customer Create</title>
+    <title>Sign Up</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
@@ -17,26 +17,20 @@ include 'config/database.php';
     <div class="container">
 
         <div class="page-header">
-            <h1>Create Customer</h1>
+            <h1>Sign Up</h1>
         </div>
 
         <?php
-        $query_customer = 'SELECT * FROM customers';
-        $stmt_customer = $con->prepare($query_customer);
-        $stmt_customer->execute();
-        $row = $stmt_customer->fetch(PDO::FETCH_ASSOC);
-        $num = $stmt_customer->rowCount();
-
         if ($_POST) {
 
             if (!empty($_FILES['fileToUpload']['name'])) {
 
                 $query_img = 'SELECT * FROM customers ORDER BY username DESC LIMIT 1';
-        $stmt_img = $con->prepare($query_img);
-        $stmt_img->execute();
-        $row2 = $stmt_img->fetch(PDO::FETCH_ASSOC);
+                $stmt_img = $con->prepare($query_img);
+                $stmt_img->execute();
+                $row2 = $stmt_img->fetch(PDO::FETCH_ASSOC);
 
-                $target_dir = "uploads/".$row2['username'];
+                $target_dir = "uploads/" . $row2['username'];
                 $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
                 $isUploadOK = TRUE;
                 $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
@@ -73,11 +67,6 @@ include 'config/database.php';
 
             include 'config/database.php';
             try {
-                $query_customer = "SELECT * FROM customers";
-                $stmt_customer = $con->prepare($query_customer);
-                $stmt_customer->execute();
-                $row = $stmt_customer->fetch(PDO::FETCH_ASSOC);
-                $num = $stmt_customer->rowCount();
 
                 $query = "INSERT INTO customers SET path=:path, username=:username,
                 email=:email, password=:password,
@@ -109,121 +98,131 @@ include 'config/database.php';
                 $flag = 0;
                 $message = "";
 
-                if ($num > 0) {
+                $query_username = "SELECT username FROM customers where username=:username";
+                $stmt_username = $con->prepare($query_username);
+                $stmt_username->bindParam(":username", $username);
+                $stmt_username->execute();
+                $num_username = $stmt_username->rowCount();
 
-                    $row = $stmt_customer->fetch(PDO::FETCH_ASSOC);
+                $query_password = "SELECT password FROM customers where password=:password";
+                $stmt_password = $con->prepare($query_password);
+                $stmt_password->bindParam(":password", $password);
+                $stmt_password->execute();
+                $num_password = $stmt_password->rowCount();
 
-                    if (!preg_match("/[a-zA-Z0-9]{1,}/", $date_of_birth)) {
-                        $message = "Date Of Bith cannot be empty";
-                        $flag = 1;
-                    } else {
-                        //date of birth validation
-                        if ($date_of_birth . substr(0, 4) >= 2005) {
-                            $message = "You must be 18 years old or above";
-                            $flag = 1;
-                        }
-                    }
-                    if (!preg_match("/[a-zA-Z0-9]{1,}/", $_POST['gender'])) {
-                        $message = "Please select your gender";
-                        $flag = 1;
-                    }
-                    if (empty($lastname)) {
-                        $message = "Last Name cannot be empty";
-                        $flag = 1;
-                    }
-                    if (empty($firstname)) {
-                        $message = "First Name cannot be empty";
-                        $flag = 1;
-                    } else {
-                        if (preg_match("/\s/", $firstname)) {
-                            $message = "First Name cannot contain space";
-                            $flag = 1;
-                        }
-                    }
-                    if (empty($_POST['comfirm_password'])) {
-                        $message = "Comfirm Password cannot be empty";
-                        $flag = 1;
-                    } else {
-                        //comfirm password validation
-                        if ($_POST['comfirm_password'] != $password) {
-                            $message = "Comfirm Password should fill same with password";
-                            $flag = 1;
-                        }
-                    }
-                    if (empty($password)) {
-                        $message = "Password cannot be empty";
-                        $flag = 1;
-                    } else {
-                        //password validation
-                        if (!preg_match("/[A-Z]/", $password)) {
-                            $message = "password need Upper letter";
-                            $flag = 1;
-                        }
-                        if (!preg_match("/[0-9]/", $password)) {
-                            $message = "password need Numerial";
-                            $flag = 1;
-                        }
-                        if (!preg_match("/[0-9A-Za-z]{8,}/", $password)) {
-                            $message = "password need more than 8 charater";
-                            $flag = 1;
-                        }
-                        if (preg_match("/\s/", $password)) {
-                            $message = "Password cannot contain space";
-                            $flag = 1;
-                        }
-                        if ($password == $row['password']) {
-                            $message = "Password is already exit";
-                            $flag = 1;
-                        }
-                    }
-                    if (empty($email)) {
-                        $message = "Email cannot be empty";
-                        $flag = 1;
-                    } else {
-                        if (substr($email, -4) != '.com') {
-                            $message = "Not a Valid Email";
-                            $flag = 1;
-                        }
-                        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                        } else {
-                            $message = "Not a Valid Email (E.g: xxx@example.com)";
-                            $flag = 1;
-                        }
-                        if (preg_match("/\s/", $email)) {
-                            $message = "Email cannot contain space";
-                            $flag = 1;
-                        }
+                $query_email = "SELECT email FROM customers where email=:email";
+                $stmt_email = $con->prepare($query_email);
+                $stmt_email->bindParam(":email", $email);
+                $stmt_email->execute();
+                $num_email = $stmt_email->rowCount();
 
-                        if ($email == $row['email']) {
-                            $message = "Email is already exit";
-                            $flag = 1;
-                        }
-                    }
-                    if (empty($username)) {
-                        $message = "Username cannot be empty";
+                if (!preg_match("/[a-zA-Z0-9]{1,}/", $date_of_birth)) {
+                    $message = "Date Of Bith cannot be empty";
+                    $flag = 1;
+                } else {
+                    //date of birth validation
+                    if ($date_of_birth . substr(0, 4) >= 2005) {
+                        $message = "You must be 18 years old or above";
                         $flag = 1;
-                    } else {
-                        //username validation
-                        if (!preg_match("/[a-zA-Z0-9]{6,}/", $username)) {
-                            $message = "Username should more than 6 charater";
-                            $flag = 1;
-                        }
-                        if (preg_match("/\s/", $username)) {
-                            $message = "Username cannot contain space";
-                            $flag = 1;
-                        }
-
-                        if ($username == $row['username']) {
-                            $message = "Username is already exit";
-                            $flag = 1;
-                        }
                     }
                 }
+                if (!preg_match("/[a-zA-Z0-9]{1,}/", $_POST['gender'])) {
+                    $message = "Please select your gender";
+                    $flag = 1;
+                }
+                if (empty($lastname)) {
+                    $message = "Last Name cannot be empty";
+                    $flag = 1;
+                }
+                if (empty($firstname)) {
+                    $message = "First Name cannot be empty";
+                    $flag = 1;
+                } else {
+                    if (preg_match("/\s/", $firstname)) {
+                        $message = "First Name cannot contain space";
+                        $flag = 1;
+                    }
+                }
+                if (empty($_POST['comfirm_password'])) {
+                    $message = "Comfirm Password cannot be empty";
+                    $flag = 1;
+                } else {
+                    //comfirm password validation
+                    if ($_POST['comfirm_password'] != $password) {
+                        $message = "Comfirm Password should fill same with password";
+                        $flag = 1;
+                    }
+                }
+                if (empty($password)) {
+                    $message = "Password cannot be empty";
+                    $flag = 1;
+                } else {
+                    //password validation
+                    if (!preg_match("/[A-Z]/", $password)) {
+                        $message = "password need Upper letter";
+                        $flag = 1;
+                    }
+                    if (!preg_match("/[0-9]/", $password)) {
+                        $message = "password need Numerial";
+                        $flag = 1;
+                    }
+                    if (!preg_match("/[0-9A-Za-z]{8,}/", $password)) {
+                        $message = "password need more than 8 charater";
+                        $flag = 1;
+                    }
+                    if (preg_match("/\s/", $password)) {
+                        $message = "Password cannot contain space";
+                        $flag = 1;
+                    }
+                    if ($num_password > 0) {
+                        $message = "Password is already exit";
+                        $flag = 1;
+                    }
+                }
+                if (empty($email)) {
+                    $message = "Email cannot be empty";
+                    $flag = 1;
+                } else {
+                    if (substr($email, -4) != '.com') {
+                        $message = "Not a Valid Email";
+                        $flag = 1;
+                    }
+                    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    } else {
+                        $message = "Not a Valid Email (E.g: xxx@example.com)";
+                        $flag = 1;
+                    }
+                    if (preg_match("/\s/", $email)) {
+                        $message = "Email cannot contain space";
+                        $flag = 1;
+                    }
 
-                if ($flag == 0 ) {
-
+                    if ($num_email > 0) {
+                        $message = "Email is already exit";
+                        $flag = 1;
+                    }
+                }
+                if (empty($username)) {
+                    $message = "Username cannot be empty";
+                    $flag = 1;
+                } else {
+                    //username validation
+                    if (!preg_match("/[a-zA-Z0-9]{6,}/", $username)) {
+                        $message = "Username should more than 6 charater";
+                        $flag = 1;
+                    }
+                    if (preg_match("/\s/", $username)) {
+                        $message = "Username cannot contain space";
+                        $flag = 1;
+                    }
+                    if ($num_username > 0) {
+                            $message = "Username is already exit";
+                            $flag = 1;  
+                    }
+                }
+                if ($flag == 0) {
                     if ($stmt->execute()) {
-                        header("Location:sign_up_success_create_message.php");
+                        header("Location:index.php?msg=signup_success");
                     }
                 } else {
                     echo "<div class='alert alert-danger'>";
@@ -242,7 +241,7 @@ include 'config/database.php';
 
         <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST" enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
-            <tr>
+                <tr>
                     <td>
                         <p>Product Image</p>
                     </td>

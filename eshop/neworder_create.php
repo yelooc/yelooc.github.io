@@ -7,7 +7,7 @@ include 'nav.php';
 <html>
 
 <head>
-    <title>Order Create</title>
+    <title>Create New Order</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
@@ -21,7 +21,7 @@ include 'nav.php';
         <?php
         include 'config/database.php';
 
-        $query = "SELECT * FROM products ORDER BY product_id DESC";
+        $query = "SELECT * FROM products ORDER BY p_id DESC";
         $stmt1 = $con->prepare($query);
         $stmt1->execute();
 
@@ -31,7 +31,7 @@ include 'nav.php';
         while ($row = $stmt1->fetch(PDO::FETCH_ASSOC)) {
 
             extract($row);
-            array_push($product_arrID, $row['product_id']);
+            array_push($product_arrID, $row['p_id']);
             array_push($product_arrName, $row['name']);
         }
 
@@ -109,7 +109,7 @@ include 'nav.php';
                         }
                         // echo "<div class='alert alert-success'>Record was saved. Last inserted ID is : $last_id</div>";
                         
-                        header("Location:neworder_success_create_message.php");
+                        header("Location:neworder_read_one.php?id=$last_id&msg=orderCreate_success");
                     } else {
 
                         $message = "Unable to save record";
@@ -216,7 +216,7 @@ include 'nav.php';
                 <div class="col text-end">
                     <input type='submit' value='Save' class='btn btn-primary' />
                     <?php
-                    echo "<a href='neworder_read.php' class='btn btn-danger'>Back to read order</a>";
+                    echo "<a href='neworder_read.php' class='btn btn-danger'>Back to Order Listing</a>";
                     ?>
                 </div>
             </div>

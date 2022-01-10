@@ -6,11 +6,12 @@ include 'nav.php';
 ?>
 
 <?php
+
     try {
 
-        $query = "SELECT * FROM products WHERE product_id = :id ";
+        $query = "SELECT products.name, products.description, products.price, products.path_img, products.promotionprice, products.manufacturedate, products.expireddate, categorys.category_name FROM products INNER JOIN categorys ON products.category_id = categorys.c_id WHERE p_id = :p_id";
         $stmt = $con->prepare($query);
-        $stmt->bindParam(":id", $id);
+        $stmt->bindParam(":p_id", $id);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         extract($row);
@@ -36,6 +37,14 @@ include 'nav.php';
         <div class="page-header">
             <h1>Read Product</h1>
         </div>
+        <?php
+        if (isset($_GET['msg']) && $_GET['msg'] == 'productCreate_success') {
+            echo "<div class='alert alert-success mt-4'>Product Created Successfully.</div>";
+        }
+        if (isset($_GET['msg']) && $_GET['msg'] == 'productUpdate_success') {
+            echo "<div class='alert alert-success mt-4'>Product Updated Successfully.</div>";
+        }
+        ?>
         <br>
         <img src="<?php echo htmlspecialchars($path_img, ENT_QUOTES); ?>" style='object-fit: cover;height:100px;width:100px;'>
         <br><br>
@@ -47,6 +56,10 @@ include 'nav.php';
             <tr>
                 <td>Description</td>
                 <td><?php echo htmlspecialchars($description, ENT_QUOTES);  ?></td>
+            </tr>
+            <tr>
+                <td>Category</td>
+                <td><?php echo htmlspecialchars($category_name, ENT_QUOTES); ?></td>
             </tr>
             <tr>
                 <td>Price</td>
@@ -71,7 +84,7 @@ include 'nav.php';
                 <td>
                     <?php
                     echo "<a href='product_update.php?id=$id' class='btn btn-primary me-2'>Edit</a>";
-                    echo "<a href='product_read.php' class='btn btn-danger'>Back to read products</a>";
+                    echo "<a href='product_read.php' class='btn btn-danger'>Back to Product Listing</a>";
                     ?>
                 </td>
             </tr>

@@ -14,7 +14,7 @@ $num = $stmt->rowCount();
 <html>
 
 <head>
-    <title>Customer Read</title>
+    <title>Customer Listing</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
@@ -22,9 +22,14 @@ $num = $stmt->rowCount();
 
     <div class="container">
         <div class="page-header">
-            <h1>Read Customers</h1>
+            <h1>Customer Listing</h1>
         </div>
-        <br><br>
+        <?php
+        if (isset($_GET['msg']) && $_GET['msg'] == 'delete') {
+                echo "<div class='alert alert-success'>Delete Customer Succesfully</div>";
+            }
+            ?>
+        <br>
         
         <a href='customer_create.php' class='btn btn-primary'>Create New Customer</a>
         
@@ -54,10 +59,10 @@ $num = $stmt->rowCount();
                     echo "<td>{$email}</td>";
                     echo "<td>{$gender}</td>";
                     echo "<td>{$date_of_birth}</td>";
-                    echo "<td class='d-flex justify-content-between'>";
-                    echo "<a href='customer_read_one.php?id={$username}' class='btn btn-info m-r-1em'>Read</a>";
-                    echo "<a href='customer_update.php?id={$username}' class='btn btn-primary m-r-1em'>Edit</a>";
-                    echo "<button onclick='myFunction_customer({$username})' class='btn btn-danger'>Delete</button>";
+                    echo "<td class='text-center'>";
+                    echo "<a href='customer_read_one.php?id={$username}' class='btn btn-info me-2'>Read</a>";
+                    echo "<a href='customer_update.php?id={$username}' class='btn btn-primary'>Edit</a>";
+                    echo "<button onclick='myFunction_customer(\"{$username}\")' class='btn btn-danger ms-2'>Delete</button>";
                     echo "</td>";
                     echo "</tr>";
                 }

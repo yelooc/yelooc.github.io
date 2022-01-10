@@ -6,10 +6,10 @@ include 'nav.php';
 
 try {
 
-    $query = "SELECT * FROM categorys WHERE id = :id";
+    $query = "SELECT * FROM categorys WHERE c_id = :c_id";
     $stmt = $con->prepare($query);
 
-    $stmt->bindParam(":id", $id);
+    $stmt->bindParam(":c_id", $id);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -45,14 +45,14 @@ catch (PDOException $exception) {
             try {
 
                 $query = "UPDATE categorys
-                SET id=:id, category_name=:category_name, description=:description WHERE id = :id";
+                SET c_id=:c_id, category_name=:category_name, description=:description WHERE c_id = :c_id";
 
                 $stmt = $con->prepare($query);
 
                 $category_name = htmlspecialchars(strip_tags($_POST['category_name']));
                 $description = htmlspecialchars(strip_tags($_POST['description']));
 
-                $stmt->bindParam(':id', $id);
+                $stmt->bindParam(':c_id', $id);
                 $stmt->bindParam(':category_name', $category_name);
                 $stmt->bindParam(':description', $description);
 
@@ -70,7 +70,7 @@ catch (PDOException $exception) {
 
                 if ($flag == 0) {
                     if ($stmt->execute()) {
-                        header("Location:category_success_update_message.php?id=$id");
+                        header("Location:category_read_one.php?id=$id&msg=categoryUpdate_success");
                     }
                 } else {
                     echo "<div class='alert alert-danger'>";
@@ -101,7 +101,7 @@ catch (PDOException $exception) {
                     <td></td>
                     <td>
                         <input type='submit' value='Save Changes' class='btn btn-primary' />
-                        <a href='category_read.php' class='btn btn-danger'>Back to read category</a>
+                        <a href='category_read.php' class='btn btn-danger'>Back to Category Listing</a>
                     </td>
                 </tr>
             </table>

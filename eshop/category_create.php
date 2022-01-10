@@ -7,7 +7,7 @@ include 'nav.php';
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Category Create</title>
+    <title>Create Category</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 <body>
@@ -49,7 +49,8 @@ $stmt->bindParam(':category_name', $category_name);
 
                 if ($flag == 0 ) {
                     if ($stmt->execute()) {
-                        header("Location:category_success_create_message.php");
+                        $last_id = $con->lastInsertid();
+                        header("Location:category_read_one.php?id=$last_id&&msg=categoryCreate_success");
                     }
                 } else {
                     echo "<div class='alert alert-danger'>";
@@ -81,7 +82,7 @@ $stmt->bindParam(':category_name', $category_name);
                     <td></td>
                     <td>
                         <input type='submit' value='Save' class='btn btn-primary' />
-                        <a href='category_read.php' class='btn btn-danger'>Back to read category</a>
+                        <a href='category_read.php' class='btn btn-danger'>Back to Category Listing</a>
 
                     </td>
                 </tr>

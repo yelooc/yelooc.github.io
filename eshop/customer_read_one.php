@@ -44,6 +44,14 @@ catch (PDOException $exception) {
         <div class="page-header">
             <h1><?php echo htmlspecialchars($username, ENT_QUOTES);  ?></h1>
         </div>
+        <?php
+    if (isset($_GET['msg']) && $_GET['msg'] == 'customerCreate_success') {
+        echo "<div class='alert alert-success mt-4'>Customer Created Successfully.</div>";
+    }
+    if (isset($_GET['msg']) && $_GET['msg'] == 'customerUpdate_success') {
+        echo "<div class='alert alert-success mt-4'>Customer Updated Successfully.</div>";
+    }
+    ?>
         <br>
         <img src="<?php echo htmlspecialchars($path, ENT_QUOTES); ?>" style='object-fit: cover;height:100px;width:100px;'>
         <br><br>
@@ -83,7 +91,7 @@ catch (PDOException $exception) {
                     <?php
                     echo "<a href='customer_update.php?id=$id' class='btn btn-primary me-2'>Edit</a>";
                     ?>
-                    <a href='customer_read.php' class='btn btn-danger'>Back to read customers</a>
+                    <a href='customer_read.php' class='btn btn-danger'>Back to Customer Listing</a>
                 </td>
             </tr>
         </table>

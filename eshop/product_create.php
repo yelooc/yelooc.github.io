@@ -7,7 +7,7 @@ include 'nav.php';
 <html>
 
 <head>
-    <title>Product Create</title>
+    <title>Create Product</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
@@ -21,26 +21,20 @@ include 'nav.php';
 
         <?php
 
-        $query_category = "SELECT * FROM categorys ORDER BY id ASC";
+        $query_category = "SELECT * FROM categorys ORDER BY c_id ASC";
         $stmt_category = $con->prepare($query_category);
         $stmt_category->execute();
-
-        $query_product = 'SELECT * FROM products';
-        $stmt_product = $con->prepare($query_product);
-        $stmt_product->execute();
-        $row = $stmt_product->fetch(PDO::FETCH_ASSOC);
-        $num = $stmt_product->rowCount();
 
         if ($_POST) {
 
             if (!empty($_FILES['fileToUpload']['name'])) {
 
-                $query_img = 'SELECT * FROM products ORDER BY product_id DESC LIMIT 1';
-        $stmt_img = $con->prepare($query_img);
-        $stmt_img->execute();
-        $row2 = $stmt_img->fetch(PDO::FETCH_ASSOC);
+                $query_img = 'SELECT * FROM products ORDER BY p_id DESC LIMIT 1';
+                $stmt_img = $con->prepare($query_img);
+                $stmt_img->execute();
+                $row = $stmt_img->fetch(PDO::FETCH_ASSOC);
 
-                $target_dir = "uploads/".$row2['product_id'];
+                $target_dir = "uploads/" . $row['p_id'];
                 $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
                 $isUploadOK = TRUE;
                 $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
@@ -68,7 +62,8 @@ include 'nav.php';
 
                 if ($isUploadOK == TRUE) {
                     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-                        header("Location:product_success_create_message.php");
+                        $last_id = $con->lastInsertid();
+                        header("Location:product_read_one.php?id=$last_id&msg=productCreate_success");
                     }
                 }
             } else {
@@ -200,8 +195,8 @@ include 'nav.php';
 
                 if ($flag == 0) {
                     if ($stmt->execute()) {
-                        // echo "<script>alert('Successfully');</script>"; 
-                        header("Location:product_success_create_message.php");
+                        $last_id = $con->lastInsertid();
+                        header("Location:product_read_one.php?id=$last_id&msg=productCreate_success");
                     }
                 } else {
                     echo "<div class='alert alert-danger'>";
@@ -239,8 +234,8 @@ include 'nav.php';
                             <?php
                             while ($row = $stmt_category->fetch(PDO::FETCH_ASSOC)) {
                                 extract($row);
-                                $selected_category = $row['id'] == $_POST['category_id'] ? 'selected' : '';
-                                echo "<option class='bg-white' value='{$id}'$selected_category>$category_name</option>";
+                                $selected_category = $row['c_id'] == $_POST['category_id'] ? 'selected' : '';
+                                echo "<option class='bg-white' value='{$c_id}'$selected_category>$category_name</option>";
                             }
                             ?>
                     </td>
@@ -280,7 +275,7 @@ include 'nav.php';
                     <td>
                         <input type='submit' value='Save' class='btn btn-primary' />
                         <?php
-                        echo "<a href='product_read.php' class='btn btn-danger'>Back to read products</a>";
+                        echo "<a href='product_read.php' class='btn btn-danger'>Back to Product Listing</a>";
                         ?>
                     </td>
                 </tr>

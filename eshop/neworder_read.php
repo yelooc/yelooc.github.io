@@ -3,18 +3,18 @@ include 'session_login.php';
 include 'config/database.php';
 include 'nav.php';
 
-$query = "SELECT * FROM order_summary ORDER BY order_id DESC";
+$query = "SELECT order_summary.order_id, order_summary.customer_username, order_summary.purchase_date, order_details.modified FROM order_summary INNER JOIN order_details ON order_summary.order_id = order_details.order_id ORDER BY order_id DESC";
 $stmt = $con->prepare($query);
 $stmt->execute();
-
 $num = $stmt->rowCount();
+
 ?>
 
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <title>Order Read</title>
+    <title>Order Listing</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 
@@ -22,9 +22,14 @@ $num = $stmt->rowCount();
 
     <div class="container">
         <div class="page-header">
-            <h1>Read Order Summary</h1>
+            <h1>Order Listing</h1>
         </div>
-        <br><br>
+        <?php
+        if (isset($_GET['msg']) && $_GET['msg'] == 'delete') {
+                echo "<div class='alert alert-success'>Delete Order Succesfully</div>";
+            }
+            ?>
+        <br>
         
         <a href='neworder_create.php' class='btn btn-primary'>Create New Order</a>
         
@@ -35,13 +40,13 @@ $num = $stmt->rowCount();
                 <th>Order ID</th>
                 <th>Customer's Username</th>
                 <th>Purchase Date</th>
-                <th></th>
+                <th>Last Modified</th>
+                <th>Action</th>
             </tr>
 
             <?php
          
             if ($num > 0) {
-
             
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                    
@@ -50,11 +55,11 @@ $num = $stmt->rowCount();
                     echo "<tr>";
                     echo "<td>{$order_id}</td>";
                     echo "<td>{$customer_username}</td>";
-                    echo "<td class='col-6'>{$purchase_date}</td>";
-                    echo "<td class='d-flex justify-content-between'>";
-
-                    echo "<a href='neworder_read_one.php?id={$order_id}' class='btn btn-info m-r-1em'>Read</a>";
-                    echo "<a href='neworder_update.php?id={$order_id}' class='btn btn-primary m-r-1em'>Edit</a>";
+                    echo "<td class='col-2'>{$purchase_date}</td>";
+                    echo "<td>$modified</td>";
+                    echo "<td class='d-flex justify-content-around'>";
+                    echo "<a href='neworder_read_one.php?id={$order_id}' class='btn btn-info'>Read</a>";
+                    echo "<a href='neworder_update.php?id={$order_id}' class='btn btn-primary'>Edit</a>";
                     echo "<button onclick='myFunction_neworder({$order_id})' class='btn btn-danger'>Delete</button>";
                     echo "</td>";
                     echo "</tr>";

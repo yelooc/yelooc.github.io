@@ -93,7 +93,7 @@ $(document).ready(function(){
     
                     if ($isUploadOK == TRUE) {
                         if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-                            header("Location:customer_success_create_message.php");
+                            header("Location:customer_read_one.php?id=$id&msg=customerUpdate_success");
                         }
                     }
                 }
@@ -222,7 +222,7 @@ $(document).ready(function(){
 
                 if ($flag == 0) {
                     if ($stmt->execute()) {
-                        header("Location:customer_success_update_message.php?id=$id");
+                        header("Location:customer_read_one.php?id=$id&msg=customerUpdate_success");
                     }
                 } else {
                     echo "<div class='alert alert-danger'>";
@@ -331,7 +331,7 @@ $(document).ready(function(){
                     <td></td>
                     <td>
                         <input type='submit' value='Save Changes' class='btn btn-primary' />
-                        <a href='customer_read.php' class='btn btn-danger'>Back to read customers</a> 
+                        <a href='customer_read.php' class='btn btn-danger'>Back to Customer Listing</a> 
                     </td>
                 </tr>
             </table>
