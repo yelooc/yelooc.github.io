@@ -30,8 +30,16 @@ catch (PDOException $exception) {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
+
         $("#remove").click(function() {
             $("#image").attr("src", "uploads/noimg_product.png");
+        });
+
+        $(window).keydown(function(event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+                return true;
+            }
         });
     });
 </script>

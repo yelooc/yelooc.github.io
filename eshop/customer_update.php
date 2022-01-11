@@ -42,9 +42,18 @@ catch (PDOException $exception) {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
+        
         $("#remove").click(function() {
             $("#image").attr("src", "uploads/noimg_customer.png");
         });
+
+        $(window).keydown(function(event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+                return true;
+            }
+        });
+
     });
 </script>
 
@@ -72,7 +81,7 @@ catch (PDOException $exception) {
             $stmt->bindParam(':path', $target_file);
             $stmt->execute();
         }
-        
+
         if (isset($_POST['save'])) {
 
             if (!empty($_FILES['fileToUpload']['name'])) {
@@ -116,7 +125,6 @@ catch (PDOException $exception) {
             }
 
             try {
-
                 $query = "UPDATE customers
                   SET path=:path, username=:username, firstname=:firstname,
                   lastname=:lastname, email=:email, gender=:gender, date_of_birth=:date_of_birth, password=:new_password, account_status=:account_status WHERE username = :username";
@@ -145,6 +153,24 @@ catch (PDOException $exception) {
 
                 $flag = 0;
                 $message = "";
+
+                $query_username = "SELECT username FROM customers where username=:username";
+                $stmt_username = $con->prepare($query_username);
+                $stmt_username->bindParam(":username", $username);
+                $stmt_username->execute();
+                $num_username = $stmt_username->rowCount();
+
+                $query_password = "SELECT password FROM customers where password=:password";
+                $stmt_password = $con->prepare($query_password);
+                $stmt_password->bindParam(":password", $password);
+                $stmt_password->execute();
+                $num_password = $stmt_password->rowCount();
+
+                $query_email = "SELECT email FROM customers where email=:email";
+                $stmt_email = $con->prepare($query_email);
+                $stmt_email->bindParam(":email", $email);
+                $stmt_email->execute();
+                $num_email = $stmt_email->rowCount();
 
                 if (empty($_POST['old_pasword']) && empty($_POST['new_password']) && empty($_POST['comfirm_password'])) {
                     $flag = 0;
@@ -181,6 +207,12 @@ catch (PDOException $exception) {
                     if (preg_match("/\s/", $email)) {
                         $message = "Email cannot contain space";
                         $flag = 1;
+                    }
+                    if ($num_email > 0) {
+                        if ($row['email'] != $email) {
+                            $message = "Email is already exit";
+                            $flag = 1;
+                        }
                     }
                 }
 
@@ -224,6 +256,12 @@ catch (PDOException $exception) {
                             if ($_POST['new_password'] == $_POST['old_password']) {
                                 $flag = 1;
                                 $message = "new password cannot same with old password";
+                            }
+                            if ($num_password > 0) {
+                                if ($row['password'] != $_POST['new_password']) {
+                                    $message = "Password is already exit";
+                                    $flag = 1;
+                                }
                             }
                         }
                     }
