@@ -74,7 +74,7 @@
 
     <div class="d-flex justify-content-center">
         <form action="" class="col-3" method="POST">
-            <img src="img\sign_in_ui_logo.png" class="mb-3" width="60px" alt="logo">
+            <img src="img\logo_nike.jpg" class="mb-3" width="200px" alt="logo">
             <p class="mb-3 fs-6">Please sign in</p>
             <?php
             $message1 = '';

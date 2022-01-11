@@ -127,7 +127,6 @@ if (isset($_POST['filter'])) {
 
         </div>
 
-        <br><br>
         <table class='table table-hover table-responsive table-bordered'>
             <tr>
                 <th>ID</th>
