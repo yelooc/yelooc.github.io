@@ -17,12 +17,12 @@ if ($numCustomer > 0) {
 }
 ?>
 <div class='container-fuild bg-dark'>
-    <nav class='navbar navbar-expand-lg py-2 navbar-dark container-sm'>
-    <button class="navbar-toggler mx-2 bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#bdNavbar" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+    <nav class='navbar navbar-expand-lg py-2 navbar-dark  container'>
+    <button class="navbar-toggler bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#bdNavbar" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-        <div class="navbar-collapse collapse row mx-2" id="bdNavbar">
-            <ul class='navbar-nav col'>
+        <div class="navbar-collapse collapse row" id="bdNavbar">
+            <ul class='navbar-nav col mx-2'>
                 <a class='nav-link text-secondary' href='home.php'>Home</a>
                 </li>
                 <li class='nav-item dropdown'>
@@ -55,7 +55,7 @@ if ($numCustomer > 0) {
                     </ul>
                 </li>
             </ul>
-            <ul class='navbar-nav col text-end d-flex justify-content-end'>
+            <ul class='navbar-nav col text-end d-flex justify-content-end mx-2'>
                 <li class='nav-item'>
                     <?php
                     echo "<a class='nav-link text-secondary' href='customer_update.php?id={$username}'>$username<img src='$path' class='ms-2' style='border-radius: 50%;width:30px;height:30px;object-fit: cover'></a>";

@@ -31,7 +31,7 @@ catch (PDOException $exception) {
 <script>
     $(document).ready(function() {
         $("#remove").click(function() {
-            $("img").attr("src", "uploads/noimg_product.png");
+            $("#image").attr("src", "uploads/noimg_product.png");
         });
     });
 </script>
@@ -45,57 +45,64 @@ catch (PDOException $exception) {
 
         <?php
 
-        if ($_POST) {
+        if (isset($_POST['remove_img'])) {
+            echo "<div class='alert alert-danger'>The Image has been deleted</div>";
+            if ($row['path_img'] != 'uploads/noimg_product.png') {
+                if (file_exists($row['path_img'])) {
+                    unlink($row['path_img']);
+                }
+            } else {
+            }
+
+            $target_file = "uploads/noimg_product.png";
+            $query = "UPDATE products SET path_img=:path_img where p_id=:p_id";
+            $stmt = $con->prepare($query);
+            $stmt->bindParam(':p_id', $id);
+            $stmt->bindParam(':path_img', $target_file);
+            $stmt->execute();
+        }
+
+        if (isset($_POST['save'])) {
+
             if (!empty($_FILES['fileToUpload']['name'])) {
-                if ("uploads/" . $_FILES['fileToUpload']['name'] != $row['path_img']) {
-                    
-                    if ($row['path_img'] != 'uploads/noimg_product.png') {
-                        unlink($row['path_img']);
-                    }
-                    
-                    $target_dir = "uploads/" . $row['p_id'];
-                    $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+                if ($row['path_img'] != 'uploads/noimg_product.png') {
+                    unlink($row['path_img']);
+                }
+
+                $target_dir = "uploads/" . $row['p_id'];
+                $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+                $isUploadOK = TRUE;
+                $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+                $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+
+                if ($check !== false) {
                     $isUploadOK = TRUE;
-                    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-                    $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+                } else {
+                    $flag = 1;
+                    $message .= "File is not an image.<br>";
+                    $isUploadOK = FALSE;
+                }
 
-                    if ($check !== false) {
-                        $isUploadOK = TRUE;
-                    } else {
-                        $flag = 1;
-                        $message .= "File is not an image.<br>";
-                        $isUploadOK = FALSE;
-                    }
+                if ($_FILES["fileToUpload"]["size"] > 5000000) {
+                    $flag = 1;
+                    $message .= "Sorry, your file is too large.<br>";
+                    $isUploadOK = FALSE;
+                }
+                // Allow certain file formats
+                if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+                    $flag = 1;
+                    $message .= "Sorry, only JPG, JPEG, PNG & GIF files are allowed.<br>";
+                    $isUploadOK = FALSE;
+                }
 
-                    if ($_FILES["fileToUpload"]["size"] > 5000000) {
-                        $flag = 1;
-                        $message .= "Sorry, your file is too large.<br>";
-                        $isUploadOK = FALSE;
-                    }
-                    // Allow certain file formats
-                    if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
-                        $flag = 1;
-                        $message .= "Sorry, only JPG, JPEG, PNG & GIF files are allowed.<br>";
-                        $isUploadOK = FALSE;
-                    }
-
-                    if ($isUploadOK == TRUE) {
-                        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-                            header("Location:product_read_one.php?id=$id&msg=productUpdate_success");
-                        }
+                if ($isUploadOK == TRUE) {
+                    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+                        header("Location:product_read_one.php?id=$id&msg=productUpdate_success");
                     }
                 }
             } else {
-                //empty basename
-                if (isset($_POST['remove_img'])){
-                    unlink($row['path_img']);
-                    $target_file = 'uploads/noimg_product.png';
-                }else{
-                    $target_file = $row['path_img'];
-                }
+                $target_file = $row['path_img'];
             }
-        
-            
 
             try {
 
@@ -214,7 +221,6 @@ catch (PDOException $exception) {
                     $message = "Name cannot be empty";
                     $flag = 1;
                 }
-
                 if ($flag == 0) {
                     if ($stmt->execute()) {
                         header("Location:product_read_one.php?id=$id&msg=productUpdate_success");
@@ -243,6 +249,33 @@ catch (PDOException $exception) {
                     <td><textarea name='description' class='form-control'><?php echo htmlspecialchars($description, ENT_QUOTES);  ?></textarea></td>
                 </tr>
                 <tr>
+                    <td>Category</td>
+                    <td>
+                        <select class="form-control form-select fs-6 rounded" name="category_id">
+                            <option value="">--Category--</option>
+                            <?php
+                            $query_category = "SELECT * FROM categorys";
+                            $stmt_category = $con->prepare($query_category);
+                            $stmt_category->execute();
+                            if ($_POST){
+
+                                while ($row3 = $stmt_category->fetch(PDO::FETCH_ASSOC)) {
+                                    extract($row3);
+                                    $selected_category = $row3['c_id'] == $_POST['category_id'] ? 'selected' : '';
+                                    echo "<option class='bg-white' value='{$c_id}'$selected_category>$category_name</option>";
+                                }
+                            }else{
+                                while ($row3 = $stmt_category->fetch(PDO::FETCH_ASSOC)) {
+                                    extract($row3);
+                                    $pre_category = $row3['c_id'] == $row['category_id'] ? 'selected' : '';
+                                    echo "<option class='bg-white' value='{$c_id}'$pre_category>$category_name</option>";
+                                }
+                            }
+                            
+                            ?>
+                    </td>
+                </tr>
+                <tr>
                     <td>Price</td>
                     <td><input type='text' name='price' value="<?php echo htmlspecialchars($price, ENT_QUOTES);  ?>" class='form-control' /></td>
                 </tr>
@@ -261,8 +294,8 @@ catch (PDOException $exception) {
                     <?php
                     } else {
                     ?>
-                        <td><img src="<?php echo htmlspecialchars($path_img, ENT_QUOTES); ?>" style="object-fit: cover;height:100px;width:100px;">
-                            <div class='row g-0'><input type="file" name="fileToUpload" class="form-control col me-2" id="fileToUpload"><button type='button' class='btn btn-danger col-2' id="remove" name='remove_img'>remove</button></div>
+                        <td><img src="<?php echo htmlspecialchars($path_img, ENT_QUOTES); ?>" id='image' style="object-fit: cover;height:100px;width:100px;">
+                            <div class='row g-0'><input type="file" name="fileToUpload" class="form-control col me-2" id="fileToUpload"><input type='submit' class='btn btn-danger col-2' id="remove" name='remove_img' value='remove'></div>
                         </td>
                     <?php
                     }
@@ -279,8 +312,7 @@ catch (PDOException $exception) {
                 <tr>
                     <td></td>
                     <td>
-                        <input type='submit' value='Save Changes' class='btn btn-primary' />
-
+                        <input type='submit' name='save' value='Save Changes' class='btn btn-primary' />
                         <a href='product_read.php' class='btn btn-danger'>Back to Product Listing</a>
 
                     </td>

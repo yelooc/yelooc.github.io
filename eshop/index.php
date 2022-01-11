@@ -78,24 +78,28 @@
             <p class="mb-3 fs-6">Please sign in</p>
             <?php
             $message1 = '';
-            if (isset($_GET['msg']) && $_GET['msg'] == 'signup_success') {
-                echo "<div class='alert alert-success'>Sign Up Succesfully</div>";
-            }
-            if (isset($_GET['msg']) && $_GET['msg'] == 'logout') {
-                echo "<div class='alert alert-success'>Log Out Succesfully</div>";
-            }
-            if (isset($_GET['msg']) && $_GET['msg'] == 'pleaselogin') {
-                echo "<div class='alert alert-danger'>Please login first, then can access to next page.</div>";
+            if (!empty(isset($_GET['msg']) && $_GET['msg'])) {
+                if ($_POST) {
+                } else {
+                    if (isset($_GET['msg']) && $_GET['msg'] == 'signup_success') {
+                        echo "<div class='alert alert-success'>Sign Up Succesfully</div>";
+                    }
+                    if (isset($_GET['msg']) && $_GET['msg'] == 'logout') {
+                        echo "<div class='alert alert-success'>Log Out Succesfully</div>";
+                    }
+                    if (isset($_GET['msg']) && $_GET['msg'] == 'pleaselogin') {
+                        echo "<div class='alert alert-danger'>Please login first, then can access to next page.</div>";
+                    }
+                }
             }
 
-            if (isset($_POST['submit'])){
+            if (isset($_POST['submit'])) {
                 if (isset($flag) && $flag == 1) {
                     echo "<div class='alert alert-danger'>";
                     echo $message;
                     echo "</div>";
                 }
             }
-             
             ?>
 
             <div class="form-floating">

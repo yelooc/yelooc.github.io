@@ -41,12 +41,13 @@ catch (PDOException $exception) {
 </head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-$(document).ready(function(){
-  $("#remove").click(function(){
-    $("img").attr("src", "uploads/noimg_customer.png");
-  });
-});
+    $(document).ready(function() {
+        $("#remove").click(function() {
+            $("#image").attr("src", "uploads/noimg_customer.png");
+        });
+    });
 </script>
+
 <body>
 
     <div class="container">
@@ -55,56 +56,64 @@ $(document).ready(function(){
         </div>
 
         <?php
+        if (isset($_POST['remove_img'])) {
+            echo "<div class='alert alert-danger'>The Image has been deleted</div>";
+            if ($row['path'] != 'uploads/noimg_customer.png') {
+                if (file_exists($row['path'])) {
+                    unlink($row['path']);
+                }
+            } else {
+            }
 
-        if ($_POST) {
+            $target_file = "uploads/noimg_customer.png";
+            $query = "UPDATE customers SET path=:path where username=:username";
+            $stmt = $con->prepare($query);
+            $stmt->bindParam(':username', $id);
+            $stmt->bindParam(':path', $target_file);
+            $stmt->execute();
+        }
+        
+        if (isset($_POST['save'])) {
 
             if (!empty($_FILES['fileToUpload']['name'])) {
-                if ("uploads/".$_FILES['fileToUpload']['name']!=$row['path']) {
-    
-                    $target_dir = "uploads/";
-                    if($row['path']!='uploads/noimg_customer.png'){
-                        unlink($row['path']);
-                    }
-                    $target_dir = "uploads/".$row['username'];
-                    $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+
+                if ($row['path'] != 'uploads/noimg_customer.png') {
+                    unlink($row['path']);
+                }
+                $target_dir = "uploads/" . $row['username'];
+                $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+                $isUploadOK = TRUE;
+                $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+                $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+
+                if ($check !== false) {
                     $isUploadOK = TRUE;
-                    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-                    $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-    
-                    if ($check !== false) {
-                        $isUploadOK = TRUE;
-                    } else {
-                        $flag = 1;
-                        $message .= "File is not an image.<br>";
-                        $isUploadOK = FALSE;
-                    }
-    
-                    if ($_FILES["fileToUpload"]["size"] > 5000000) {
-                        $flag = 1;
-                        $message .= "Sorry, your file is too large.<br>";
-                        $isUploadOK = FALSE;
-                    }
-                    // Allow certain file formats
-                    if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
-                        $flag = 1;
-                        $message .= "Sorry, only JPG, JPEG, PNG & GIF files are allowed.<br>";
-                        $isUploadOK = FALSE;
-                    }
-    
-                    if ($isUploadOK == TRUE) {
-                        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-                            header("Location:customer_read_one.php?id=$id&msg=customerUpdate_success");
-                        }
+                } else {
+                    $flag = 1;
+                    $message .= "File is not an image.<br>";
+                    $isUploadOK = FALSE;
+                }
+
+                if ($_FILES["fileToUpload"]["size"] > 5000000) {
+                    $flag = 1;
+                    $message .= "Sorry, your file is too large.<br>";
+                    $isUploadOK = FALSE;
+                }
+                // Allow certain file formats
+                if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+                    $flag = 1;
+                    $message .= "Sorry, only JPG, JPEG, PNG & GIF files are allowed.<br>";
+                    $isUploadOK = FALSE;
+                }
+
+                if ($isUploadOK == TRUE) {
+                    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+                        header("Location:customer_read_one.php?id=$id&msg=customerUpdate_success");
                     }
                 }
-            }else{
+            } else {
                 $target_file = $row['path'];
-                }
-    
-                // if (isset($_POST['remove'])){
-                //     unlink($row['path_img']);
-                //     $target_file = 'uploads/noimg_product.png';
-                // }
+            }
 
             try {
 
@@ -239,19 +248,21 @@ $(document).ready(function(){
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post" enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
-            <tr>
+                <tr>
                     <td>
                         <p>Customer Image</p>
                     </td>
-                    <?php 
-                    if ($row['path']=="uploads/noimg_customer.png"){
+                    <?php
+                    if ($row['path'] == "uploads/noimg_customer.png") {
                     ?>
-                    <td><img src="<?php echo htmlspecialchars($path, ENT_QUOTES); ?>" style="object-fit: cover;height:100px;width:100px"><input type="file" name="fileToUpload" class="form-control" id="fileToUpload"></td>
-                    <?php 
-                    }else{
-                        ?>
-                         <td><img src="<?php echo htmlspecialchars($path, ENT_QUOTES); ?>" style="object-fit: cover;height:100px;width:100px;"><div class='row g-0'><input type="file" name="fileToUpload" class="form-control col me-2" id="fileToUpload"><button type='button' class='btn btn-danger col-2' id="remove" name='remove'>remove</button></div></td>
-                        <?php
+                        <td><img src="<?php echo htmlspecialchars($path, ENT_QUOTES); ?>" style="object-fit: cover;height:100px;width:100px"><input type="file" name="fileToUpload" class="form-control" id="fileToUpload"></td>
+                    <?php
+                    } else {
+                    ?>
+                        <td><img src="<?php echo htmlspecialchars($path, ENT_QUOTES); ?>" id='image' style="object-fit: cover;height:100px;width:100px;">
+                            <div class='row g-0'><input type="file" name="fileToUpload" class="form-control col me-2" id="fileToUpload"><input type='submit' class='btn btn-danger col-2' id="remove" name='remove_img' value='remove'></div>
+                        </td>
+                    <?php
                     }
                     ?>
                 </tr>
@@ -330,8 +341,8 @@ $(document).ready(function(){
                 <tr>
                     <td></td>
                     <td>
-                        <input type='submit' value='Save Changes' class='btn btn-primary' />
-                        <a href='customer_read.php' class='btn btn-danger'>Back to Customer Listing</a> 
+                        <input type='submit' name='save' value='Save Changes' class='btn btn-primary' />
+                        <a href='customer_read.php' class='btn btn-danger'>Back to Customer Listing</a>
                     </td>
                 </tr>
             </table>
